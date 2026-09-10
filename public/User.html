@@ -134,10 +134,7 @@
                 <input type="text" v-model="userInput" @keyup.enter="sendMessage" placeholder="Введите сообщение..."/>
                 <button style="padding: 12px 10px;" @click="sendMessage">Отправить</button>
             </div>
-        </div>    
-        <!-- Добавляй код сюда! -->
-
-        <!-- Дальше идут модальные окна! -->
+        </div>  
 
         <div v-if="isExitModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>

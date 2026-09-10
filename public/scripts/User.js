@@ -270,6 +270,7 @@ new Vue({
                 return response.json();
             });
         }
+        
     },
     watch: {
         isExitModalOpen(newValue) {

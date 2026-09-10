@@ -10,21 +10,54 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (dropdownMenuToggle) {
-        dropdownMenuToggle.addEventListener('click', function() {
-            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-        });
-    }
+    if (dropdownMenuToggle && dropdownMenu) {
+    let isCursorOnMenu = false;
+    let isCursorOnButton = false;
+    let closeTimeout;
 
-    document.addEventListener('click', function(event) {
-        if (sidebar && !sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-            sidebar.classList.remove('active');
-        }
+    // Создаем буферный элемент (программно)
+    const bufferZone = document.createElement('div');
+    bufferZone.style.position = 'absolute';
+    bufferZone.style.width = '100%';
+    bufferZone.style.height = '10px'; // Высота буферной зоны
+    bufferZone.style.bottom = '-10px'; // Располагаем под кнопкой
+    bufferZone.style.zIndex = '1000';
+    dropdownMenuToggle.parentNode.insertBefore(bufferZone, dropdownMenu);
 
-        if (dropdownMenuToggle && !dropdownMenuToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.style.display = 'none'; // Закрыть меню, если кликнули вне его
+    // Открытие/закрытие меню
+    dropdownMenuToggle.addEventListener('click', function(event) {
+        event.stopPropagation();
+        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Отслеживание позиции курсора
+    dropdownMenuToggle.addEventListener('mouseenter', () => isCursorOnButton = true);
+    dropdownMenuToggle.addEventListener('mouseleave', () => isCursorOnButton = false);
+    bufferZone.addEventListener('mouseenter', () => isCursorOnButton = true);
+    bufferZone.addEventListener('mouseleave', () => isCursorOnButton = false);
+    dropdownMenu.addEventListener('mouseenter', () => isCursorOnMenu = true);
+    dropdownMenu.addEventListener('mouseleave', () => isCursorOnMenu = false);
+
+    // Проверка положения курсора
+    document.addEventListener('mousemove', function() {
+        clearTimeout(closeTimeout);
+        
+        if (!isCursorOnButton && !isCursorOnMenu && dropdownMenu.style.display === 'block') {
+            closeTimeout = setTimeout(() => {
+                dropdownMenu.style.display = 'none';
+            }, 25); // Задержка перед закрытием
         }
     });
+
+    // Закрытие при клике вне области
+    document.addEventListener('click', function(event) {
+        if (!dropdownMenu.contains(event.target) && 
+            !dropdownMenuToggle.contains(event.target) && 
+            !bufferZone.contains(event.target)) {
+            dropdownMenu.style.display = 'none';
+        }
+    });
+}
 
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -77,6 +110,36 @@ new Vue({
     el: '#app',
     data: {
         goods: [],
+        circulationItems: [
+            {
+                image: "assets/картхолдер.png",
+                name: "Картхолдеры",
+                stock: 45,
+                oldPrice: 150,
+                newPrice: 120,
+            },
+            {
+                image: "assets/наклейки.png",
+                name: "Объёмные наклейки",
+                stock: 32,
+                oldPrice: 80,
+                newPrice: 64,
+            },
+            {
+                image: "assets/стенд.png",
+                name: "Стенды с блёстками",
+                stock: 32,
+                oldPrice: 80,
+                newPrice: 64,
+            },
+            {
+                image: "assets/биндер.png",
+                name: "Биндеры",
+                stock: 32,
+                oldPrice: 80,
+                newPrice: 64,
+            },
+        ],
         isMouseDownOnModal: false,
         isMouseDownOnBackdrop: false,
         isUserModalOpen: false,
@@ -196,7 +259,7 @@ new Vue({
             }
         
             // Отправляем данные на сервер
-            fetch('/SignUpUser ', {
+            fetch('/SignUpUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -367,7 +430,7 @@ new Vue({
         },
         togglePasswordLoginVisibility() {
             this.isPasswordLoginVisible = !this.isPasswordLoginVisible;
-        }
+        },
     },
     watch: {
         isUserModalOpen(newValue) {
