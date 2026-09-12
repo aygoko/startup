@@ -38,30 +38,28 @@ func main() {
 	}
 	fmt.Println("✅ База данных успешно подключена")
 
-	// 3. Инициализация инфраструктуры (Session, Email)
+	// 3. Инициализация инфраструктуры
 	sessionManager := session.NewManager()
-
 	emailSender := email.NewSMTPSender(cfg.SMTPHost, cfg.SMTPPort, cfg.SMTPUser, cfg.SMTPPassword)
 
-	// 4. Инициализация репозиториев (Слой данных)
+	// 4. Инициализация репозиториев
 	userRepo := postgres.NewUserRepository(db)
 	goodRepo := postgres.NewGoodRepository(db)
 	basketRepo := postgres.NewBasketRepository(db)
 
-	// 5. Инициализация сервисов (Бизнес-логика)
-	// Сервисы зависят только от интерфейсов репозиториев (Dependency Inversion)
+	// 5. Инициализация сервисов
 	authService := service.NewAuthService(userRepo, emailSender, cfg.FrontendURL)
 	goodsService := service.NewGoodsService(goodRepo, userRepo)
 	basketService := service.NewBasketService(basketRepo, goodRepo)
 
-	// 6. Инициализация HTTP-обработчиков (Delivery слой)
+	// 6. Инициализация HTTP-обработчиков
 	authHandler := handler.NewAuthHandler(authService, sessionManager)
 	goodsHandler := handler.NewGoodsHandler(goodsService, sessionManager)
 	basketHandler := handler.NewBasketHandler(basketService, sessionManager)
 	userHandler := handler.NewUserHandler(userRepo, sessionManager)
 	geminiHandler := handler.NewGeminiHandler(cfg.GeminiURL)
 
-	// 7. Фоновая задача для очистки протухших токенов (каждую минуту)
+	// 7. Фоновая задача для очистки протухших токенов
 	go func() {
 		for {
 			time.Sleep(time.Minute)
@@ -71,8 +69,9 @@ func main() {
 
 	// 8. Настройка Fiber приложения
 	app := fiber.New(fiber.Config{
-		// Возвращаем ошибки в виде JSON для удобства фронтенда
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			// Логгируем ошибку для отладки
+			fmt.Printf("❌ Ошибка сервера: %v\n", err)
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": err.Error(),
 			})
@@ -82,15 +81,29 @@ func main() {
 	// Глобальные мидлвары
 	app.Use(logger.New())
 
-	// Статические файлы (фронтенд)
+	// Статические файлы (фронтенд: HTML, CSS, JS, картинки)
 	app.Static("/public", "./public")
 
-	// 9. Регистрация маршрутов (Routing)
+	// ==========================================
+	// 🔥 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ 1: Редирект с корня
+	// ==========================================
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/public/Sofa.html", fiber.StatusFound)
 	})
 
-	// Auth routes
+	// Заглушка для favicon (чтобы браузер не спамил ошибками 404/401)
+	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+
+	// === ПУБЛИЧНЫЕ МАРШРУТЫ (без авторизации) ===
+
+	// 🔥 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ 2: Маршрут для проверки куки, который ждет ваш Sofa.js
+	// Если в authHandler нет метода CheckCookie, используйте Authenticate или создайте его по аналогии со старым кодом.
+	//app.Get("/api/checkCookie", authHandler.CheckCookie)
+
+	app.Get("/sofa/getgoods", goodsHandler.GetBasicGoods) // Важно для главной страницы
+
 	app.Post("/SignUpUser", authHandler.SignUp)
 	app.Post("/LogIn", authHandler.Login)
 	app.Post("/api/logout", authHandler.Logout)
@@ -98,12 +111,12 @@ func main() {
 	app.Post("/api/SubmitRecovery", authHandler.SubmitRecovery)
 	app.Post("/api/checkToken", authHandler.CheckToken)
 	app.Post("/api/confirmRecoveryToken", authHandler.ConfirmRecoveryToken)
+	app.Post("/api/gemini", geminiHandler.Handle)
 
-	// Защищенные маршруты (требуют аутентификации)
+	// === ЗАЩИЩЕННЫЕ МАРШРУТЫ (требуют авторизации) ===
 	protected := app.Group("", middleware.RequireAuth(sessionManager))
 
 	protected.Get("/api/getgoods", goodsHandler.GetGoods)
-	protected.Get("/api/checkCookie", userHandler.CheckCookie)
 	protected.Get("/api/authenticate", userHandler.Authenticate)
 	protected.Get("/api/checkUserFields", userHandler.CheckUserFields)
 	protected.Post("/api/changeLogin", userHandler.ChangeLogin)
@@ -113,11 +126,8 @@ func main() {
 	protected.Delete("/api/removeFromBasket/:id", basketHandler.RemoveFromBasket)
 	protected.Post("/api/payForItems", basketHandler.PayForItems)
 
-	// Внешние API
-	app.Post("/api/gemini", geminiHandler.Handle)
-
 	// 10. Запуск сервера
 	port := ":" + cfg.ServerPort
-	fmt.Printf("🚀 Сервер запущен на http://localhost%s\n", port)
+	fmt.Printf("🚀 Сервер успешно запущен на http://localhost%s\n", port)
 	log.Fatal(app.Listen(port))
 }

@@ -31,3 +31,14 @@ func (h *GoodsHandler) GetGoods(c *fiber.Ctx) error {
 
 	return c.JSON(goods)
 }
+
+// GetBasicGoods — GET /sofa/getgoods (публичный эндпоинт для главной страницы)
+func (h *GoodsHandler) GetBasicGoods(c *fiber.Ctx) error {
+	goods, err := h.goodsService.GetBasicGoods(c.Context())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.JSON(goods)
+}

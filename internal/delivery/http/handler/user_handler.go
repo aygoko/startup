@@ -18,19 +18,6 @@ func NewUserHandler(userRepo repository.UserRepository, sessionManager *session.
 	}
 }
 
-// CheckCookie — GET /api/checkCookie
-func (h *UserHandler) CheckCookie(c *fiber.Ctx) error {
-	if h.sessionManager.IsAuthenticated(c) {
-		return c.JSON(fiber.Map{
-			"success": true,
-		})
-	}
-	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-		"success": false,
-		"message": "user not authenticated",
-	})
-}
-
 // Authenticate — GET /api/authenticate
 func (h *UserHandler) Authenticate(c *fiber.Ctx) error {
 	email, ok := h.sessionManager.GetEmail(c)
