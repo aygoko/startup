@@ -24,7 +24,7 @@ func main() {
 	cfg := config.Load()
 
 	// 2. Инициализация базы данных
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&client_encoding=UTF8",
 		cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 
 	db, err := sql.Open("postgres", connStr)
@@ -76,6 +76,11 @@ func main() {
 				"error": err.Error(),
 			})
 		},
+	})
+
+	app.Use(func(c *fiber.Ctx) error {
+		c.Set("Content-Type", "application/json; charset=utf-8")
+		return c.Next()
 	})
 
 	// Глобальные мидлвары
