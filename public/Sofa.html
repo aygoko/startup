@@ -3,124 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofa</title>
+    <title>Коллекты от Софы — Производство мерча в Китае</title>
     <link rel="stylesheet" href="Sofa.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 </head>
 <body>
 <div id="app">
     <div id="notifications" class="notifications"></div>
-    <!-- Заголовок-->
+    
+    <!-- Шапка сайта -->
     <header>
         <div class="header-content">
-            <div style="display: flex; align-items: center;">
-
-                <div class="logo-group">
-                    <img src="assets/rose.jpeg" alt="Логотип" class="logo-image" 
-                    style="width: 80px; height: auto; margin-right: 20px;">
-                    <div class="logo" style="margin-right:  690px;">Sofa</div>
-                </div>
-                <div class="buttons">
-                    <div>
-                        <a @click.prevent="openLogInModal" style="margin-left: 5px;">Войти</a>
-                        <a @click.prevent="openUserModal" >Зарегистрироваться</a>
-                    </div>                                                
-                </div>
+            <div class="logo-group">
+                <img src="assets/rose.jpeg" alt="Логотип" class="logo-image">
+                <span class="logo">Sofa</span>
             </div>
-            <div style="display: flex;flex-direction: row;">
+            
+            <div class="header-right">
+                <div class="buttons">
+                    <a @click.prevent="openLogInModal">Войти</a>
+                    <a @click.prevent="openUserModal" class="btn-register-link">Зарегистрироваться</a>
+                </div>
+                <button id="menuToggle" class="menu-button" aria-label="Открыть меню">☰</button>
             </div>
         </div>
     </header>
     
-    <!-- Боковая панель с навигацией -->
+    <!-- Боковое мобильное меню -->
     <aside id="sidebar" class="sidebar">
         <nav>
             <a style="text-decoration: underline; color:black"><b>Главная</b></a>
             <a @click.prevent="openLogInModal">Войти</a>
             <a @click.prevent="openUserModal">Зарегистрироваться</a>
-            <a @click.prevent="openUserModal">Новинки</a>
-            <a @click.prevent="openUserModal">Каталог</a>
-            <a @click.prevent="openUserModal">Текущий тираж</a>
-            <a @click.prevent="openUserModal">Профиль</a>
-            <a @click.prevent="openUserModal">Заказы</a>
-            <a @click.prevent="openUserModal">Избранное</a>
-            <a @click.prevent="openUserModal">Оплата</a>
-            <a @click.prevent="openUserModal">Доставка</a>
+            <a href="#circulation" @click="closeSidebar">Текущий тираж</a>
+            <a href="#benefits" @click="closeSidebar">Преимущества</a>
+            <a href="#testimonials" @click="closeSidebar">Отзывы</a>
+            <a @click.prevent="openDocModal('terms')">Оферта и соглашение</a>
+            <a @click.prevent="openDocModal('privacy')">Конфиденциальность</a>
         </nav>
     </aside>
-    <div id="notifications" class="notifications"></div>
     
-    <!-- Основная часть -->
+    <!-- Основной контент -->
     <main>
-
-        <div id="description">
+        <!-- Баннер сервиса -->
+        <section id="description">
             <div class="text-block">
                 <h1 class="main-title">Коллекты в Китай</h1>
-                <p class="subtitle">Создайте мерч в одной из тысяч<br>типографий на Tao Bao и 1688</p>
+                <p class="subtitle">Ваш мерч — наша забота! Создайте авторский мерч в проверенных типографиях на TaoBao и 1688 без головной боли.</p>
                 <a href="#circulation" class="order-button">Заказать</a>
             </div>
             <div class="image-block">
-                <img src="assets/коллаж.png" alt="Примеры мерча" class="collage-image">
+                <img src="assets/коллаж.png" alt="Примеры авторского мерча" class="collage-image">
             </div>
-        </div>
+        </section>
 
-        <div class="collective-printing">
+        <!-- Блок совместной печати -->
+        <section class="collective-printing" id="benefits">
             <div class="printing-content">
                 <h2>Печатайте мерч дешевле с совместными тиражами</h2>
                 <div class="printing-benefits">
                     <div class="benefit-item">
                         <img src="assets/group.png" alt="Объединение заказов">
-                        <p>Объединяйте заказы<br>с другими художниками<br>с разных городов</p>
+                        <p>Объединяйте тиражи с другими художниками из разных городов</p>
                     </div>
                     <div class="benefit-item">
                         <img src="assets/machine.png" alt="Печать в Китае">
-                        <p>Печатайте мерч в Китае<br>по оптовым ценам</p>
+                        <p>Печатайте мерч на фабриках Китая по фабричным оптовым ценам</p>
                     </div>
                     <div class="benefit-item">
                         <img src="assets/boxes.png" alt="Доставка">
-                        <p>Получайте заказ индивидуально<br>или объединённой доставкой</p>
+                        <p>Получайте заказ индивидуально в свой город или сборной посылкой</p>
                     </div>
                 </div>
-                <button class="learn-more-button">Узнать больше</button>
+                <a href="#circulation" class="learn-more-button">Узнать больше</a>
             </div>
-        </div>
+        </section>
 
-         <div class="circulation-cards" id="circulation">
-            <div class="circulation-card" v-for="(item, index) in circulationItems" :key="index">
-                <div class="circulation-image-container">
-                    <img :src="item.image" :alt="item.name" class="circulation-image">
-                </div>
-                <div class="circulation-content text-center">
-                    <h3>{{ item.name }}</h3>
-                    <div class="circulation-stock">Ещё {{ item.stock }} шт</div>
-                    <div class="circulation-prices">
-                        <div class="price-column">
-                            <span class="old-price">{{ item.oldPrice }}Р</span>
-                            <span class="price-label">текущая<br>цена</span>
-                        </div>
-                        <span class="price-arrow">→</span>
-                        <div class="price-column">
-                            <span class="new-price">{{ item.newPrice }}Р</span>
-                            <span class="price-label">цена<br>со скидкой</span>
+        <!-- Текущие тиражи -->
+        <section class="circulation-section" id="circulation">
+            <h2 class="section-title">Текущие открытые сборы</h2>
+            <div class="circulation-cards">
+                <div class="circulation-card" v-for="(item, index) in circulationItems" :key="index">
+                    <div class="circulation-image-container">
+                        <img :src="item.image" :alt="item.name" class="circulation-image">
+                    </div>
+                    <div class="circulation-content">
+                        <h3>{{ item.name }}</h3>
+                        <div class="circulation-stock">Осталось набрать: {{ item.stock }} шт</div>
+                        <div class="circulation-prices">
+                            <div class="price-column">
+                                <span class="old-price">{{ item.oldPrice }} ₽</span>
+                                <span class="price-label">обычная</span>
+                            </div>
+                            <span class="price-arrow">→</span>
+                            <div class="price-column">
+                                <span class="new-price">{{ item.newPrice }} ₽</span>
+                                <span class="price-label">в коллекте</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- ========================================== -->
-        <!-- НАЧАЛО: СЕКЦИЯ ОТЗЫВОВ                     -->
-        <!-- ========================================== -->
-        <section class="testimonials-section">
+        <!-- Отзывы -->
+        <section class="testimonials-section" id="testimonials">
             <div class="container">
-                <!-- Заголовок -->
                 <div class="section-header">
                     <span class="badge">Отзывы</span>
-                    <h2>Слова наших клиентов</h2>
-                    <p>Отзывы основателей, команд и брендов, с которыми мы работали.</p>
+                    <h2>Слова наших авторов</h2>
+                    <p>Отзывы художников, иллюстраторов и мерчеделов, запускавших тиражи с нами.</p>
                 </div>
 
-                <!-- Навигация -->
                 <div class="nav-controls">
                     <button class="nav-btn prev" id="prevBtn" aria-label="Предыдущий отзыв">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -134,24 +128,20 @@
                     </button>
                 </div>
 
-                <!-- Слайдер -->
                 <div class="slider-wrapper">
                     <div class="slider-track" id="sliderTrack">
-                        
-                        <!-- Карточка 1 (Активная) -->
                         <div class="testimonial-card active">
                             <div class="card-image">
                                 <img src="assets/photo1.png" alt="Елизарова Яна">
                             </div>
                             <div class="card-content">
-                                <h3>Елизарова Яна </h3>
+                                <h3>Елизарова Яна</h3>
                                 <p class="quote">
                                     «Наконец-то мерч без головной боли! Отправила макет — ребята сами всё проверили, указали на ошибки. Тираж пришёл точно в срок, качество супер. Котик на стикерах — просто милота!»
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Карточка 2 -->
                         <div class="testimonial-card">
                             <div class="card-image">
                                 <img src="assets/photo2.jpg" alt="Федотова Зоя">
@@ -164,7 +154,6 @@
                             </div>
                         </div>
 
-                        <!-- Карточка 3 -->
                         <div class="testimonial-card">
                             <div class="card-image">
                                 <img src="assets/photo3.jpg" alt="Смирнов Максим">
@@ -173,381 +162,295 @@
                                 <h3>Смирнов Максим</h3>
                                 <p class="quote">
                                     «Работаю с платформой уже полгода. Всё чётко: автоматическая проверка параметров реально экономит время. Заказы приходят без брака, клиенты довольны. Рекомендую.»
+                                </p>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
-            
-            <!-- Кнопка развернуть (декоративная) -->
-            <button class="expand-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                </svg>
-            </button>
         </section>
-        <!-- ========================================== -->
-        <!-- КОНЕЦ: СЕКЦИЯ ОТЗЫВОВ                      -->
-        <!-- ========================================== -->
 
-        <!-- Регистрация -->
+        <!-- Модальное окно: Регистрация -->
         <div v-if="isUserModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
             <div class="modal-content" @click.stop>
                 <div class="modal-header">
                     <span class="close" @click="closeUserModal">&times;</span>
-                    <h2 style="font-size: 28px; text-align: center; margin: 0;">Зарегистрироваться</h2>
+                    <h2>Регистрация</h2>
                 </div>  
                 <div class="button-container">
                     <button class="selected" type="button" id="buyerButton" @click="selectUserType('buyer')">Покупатель</button>
-                    <button class="" type="button" id="merchantButton" @click="selectUserType('merchant')">Мерчедел</button>
+                    <button type="button" id="merchantButton" @click="selectUserType('merchant')">Мерчедел</button>
                 </div>
                 <form id="UserForm" @submit.prevent="submitUserForm">
-                    <div style="display: grid;">
-                        <!-- Общие поля для всех пользователей -->
-                        <label for="login">Логин</label>
+                    <div class="form-fields-group">
+                        <label for="user-login">Логин</label>
                         <div class="input-with-icon">
-                            <img 
-                                src="assets/login-gray.png"
-                                data-hover="assets/login-red.png"
-                                class="input-icon icon-login"
-                                @mouseover="hoverIcon($event)"
-                                @mouseout="unhoverIcon($event)">
-                            <input type="text" id="user-login" required>
+                            <img src="assets/login-gray.png" class="input-icon icon-login" alt="Логин">
+                            <input type="text" id="user-login" placeholder="Придумайте логин" required>
                         </div>
 
-                        <!-- Почта -->
-                        <label for="email">Электронная почта</label>
+                        <label for="user-email">Электронная почта</label>
                         <div class="input-with-icon">
-                            <img 
-                                src="assets/email-gray.png" 
-                                data-hover="assets/email-red.png" 
-                                class="input-icon icon-email"
-                                @mouseover="hoverIcon($event)"
-                                @mouseout="unhoverIcon($event)">
-                            <input type="email" id="user-email" required>
+                            <img src="assets/email-gray.png" class="input-icon icon-email" alt="Email">
+                            <input type="email" id="user-email" placeholder="example@mail.ru" required>
                         </div>
 
-                        <!-- Пароль -->
-                        <label for="password">Пароль</label>
+                        <label for="user-password">Пароль</label>
                         <div class="input-with-icon password-container">
-                            <img 
-                            src="assets/password-gray.png" 
-                            data-hover="assets/password-red.png" 
-                            class="input-icon icon-password"
-                            @mouseover="hoverIcon($event)"
-                            @mouseout="unhoverIcon($event)">
-                            <input 
-                            :type="isPasswordVisible ? 'text' : 'password'" 
-                            id="user-password"
-                            required>
+                            <img src="assets/password-gray.png" class="input-icon icon-password" alt="Пароль">
+                            <input :type="isPasswordVisible ? 'text' : 'password'" id="user-password" placeholder="Минимум 8 знаков" required>
                             <a href="#" @click.prevent="togglePasswordVisibility" class="eye-link">
-                            <img 
-                                :src="isPasswordVisible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" 
-                                style="height: 20px; width: 20px;">
+                                <img :src="isPasswordVisible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" alt="Показать">
                             </a>
                         </div>
 
-                        <!-- Проверка пароля -->
-                        <label for="password-repeat">Подтвердите пароль</label>
+                        <label for="user-password-repeat">Подтвердите пароль</label>
                         <div class="input-with-icon password-container">
-                            <img src="assets/password-gray.png" 
-                                data-hover="assets/password-red.png" 
-                                class="input-icon icon-password"
-                                @mouseover="hoverIcon($event)"
-                                @mouseout="unhoverIcon($event)">
-                            <input :type="isPassword2Visible ? 'text' : 'password'" 
-                                id="user-password-repeat" 
-                                required>
+                            <img src="assets/password-gray.png" class="input-icon icon-password" alt="Пароль">
+                            <input :type="isPassword2Visible ? 'text' : 'password'" id="user-password-repeat" placeholder="Повторите пароль" required>
                             <a href="#" @click.prevent="togglePassword2Visibility" class="eye-link">
-                                <img :src="isPassword2Visible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" 
-                                style="height: 20px; width: 20px;">
+                                <img :src="isPassword2Visible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" alt="Показать">
                             </a>
                         </div>
 
-                        <!-- Мерчедел -->
+                        <!-- Дополнительные поля для мерчедела -->
                         <div v-if="userType === 'merchant'">
-                            <!-- Ник автора -->
-                            <label for="nickname">Ник автора</label>        
+                            <label for="author-nickname">Ник автора / Студия</label>        
                             <div class="input-with-icon">
-                                <img src="assets/stylus-gray.png" 
-                                    data-hover="assets/stylus-red.png" 
-                                    class="input-icon icon-stylus"
-                                    @mouseover="hoverIcon($event)"
-                                    @mouseout="unhoverIcon($event)">
-                                <input type="text" id="author-nickname" required>
+                                <img src="assets/stylus-gray.png" class="input-icon icon-stylus" alt="Ник">
+                                <input type="text" id="author-nickname" placeholder="Творческий псевдоним" required>
                             </div>
                             
-                            <!-- Ссылка на ВК -->
-                            <label for="vk-link">Ссылка на личную страницу ВК</label>
+                            <label for="author-vk">Ссылка на страницу / паблик ВК</label>
                             <div class="input-with-icon">
-                                <img src="assets/vk-gray.png" 
-                                    data-hover="assets/vk-red.png" 
-                                    class="input-icon icon-vk"
-                                    @mouseover="hoverIcon($event)"
-                                    @mouseout="unhoverIcon($event)">
-                                <input type="text" id="author-vk" required>
+                                <img src="assets/vk-gray.png" class="input-icon icon-vk" alt="VK">
+                                <input type="text" id="author-vk" placeholder="https://vk.com/..." required>
                             </div>
                         </div>
 
-                        <!-- Согласие на обработку данных -->
-                        <div style="display: flex; align-items: baseline; gap: 8px; margin: 15px 0; margin-left: auto; margin-right: auto; flex-wrap: wrap; align-content: unset;">
-                            <input type="checkbox" 
-                                    id="agreement-checkbox"
-                                    required
-                                    style="flex-shrink: 0; margin: 0;">
-                            <label for="agreement-checkbox" style="cursor: pointer; line-height: 1.5; margin: auto; border: none;">
-                                Я даю согласие на 
-                                <a class="PerDataLink" href="#" 
-                                @click.prevent="openAgreementModal"
-                                style="color: #9c131d; font-weight: 500;">
-                                обработку персональных данных
-                                </a>
+                        <!-- Чекбокс согласия -->
+                        <div class="checkbox-legal-row">
+                            <input type="checkbox" id="agreement-checkbox" required>
+                            <label for="agreement-checkbox">
+                                Я принимаю условия 
+                                <a class="PerDataLink" href="#" @click.prevent="openDocModal('terms')">Пользовательского соглашения ИП</a> 
+                                и даю согласие на 
+                                <a class="PerDataLink" href="#" @click.prevent="openDocModal('privacy')">обработку персональных данных</a>.
                             </label>
                         </div>
         
                         <button type="submit">Зарегистрироваться</button>
-
-                        <a href="#" @click.prevent="openLogInModal">Уже есть аккаунт?</a>
+                        <a href="#" @click.prevent="openLogInModal" class="switch-auth-link">Уже есть аккаунт? Войти</a>
                     </div>
                 </form>
             </div>
         </div>
         
-        <!-- Вход? -->
+        <!-- Модальное окно: Вход -->
         <div v-if="isLogInModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeLogInModal">&times;</span>
-                <h2>Войти</h2>
+                <h2>Войти в аккаунт</h2>
                 <form id="LogInForm" @submit.prevent="submitLogInForm">
-                    <label for="login">Электронная почта</label>
+                    <label for="auth-email-login-nickname">Логин или эл. почта</label>
                     <div class="input-with-icon">
-                        <img src="assets/email-gray.png" 
-                                data-hover="assets/email-red.png" 
-                                class="input-icon icon-email"
-                                @mouseover="hoverIcon($event)"
-                                @mouseout="unhoverIcon($event)">
-                            <input id="auth-email-login-nickname" required>
+                        <img src="assets/email-gray.png" class="input-icon icon-email" alt="Email">
+                        <input id="auth-email-login-nickname" placeholder="Логин или почта" required>
                     </div>
 
-                    <label for="password">Пароль</label>
+                    <label for="auth-password">Пароль</label>
                     <div class="password-container">
-                        <img 
-                            src="assets/password-gray.png" 
-                            data-hover="assets/password-red.png" 
-                            class="input-icon icon-password"
-                            @mouseover="hoverIcon($event)"
-                            @mouseout="unhoverIcon($event)">
-                        <input :type="isPasswordLoginVisible ? 'text' : 'password'" id="auth-password" required>
+                        <img src="assets/password-gray.png" class="input-icon icon-password" alt="Пароль">
+                        <input :type="isPasswordLoginVisible ? 'text' : 'password'" id="auth-password" placeholder="Ваш пароль" required>
                         <a href="#" @click.prevent="togglePasswordLoginVisibility" class="eye-link">
-                             <img 
-                                :src="isPasswordVisible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" 
-                                style="height: 20px; width: 20px;">
+                             <img :src="isPasswordLoginVisible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" alt="Показать">
                         </a>
                     </div>
                     
                     <button type="submit">Войти</button>
-                    <a href="#" @click.prevent="openRecoveryModal">Забыли пароль?</a>
+                    <a href="#" @click.prevent="openRecoveryModal" class="switch-auth-link">Забыли пароль?</a>
                 </form>
             </div>
         </div>
 
-        
-        <div v-if="isRecoveryModalOpen" class="modal-recovery"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+        <!-- Модальное окно: Восстановление пароля -->
+        <div v-if="isRecoveryModalOpen" class="modal-recovery" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeRecoveryModal">&times;</span>
-                <h2>Восстановление пароля</h2>
+                <h2>Восстановление доступа</h2>
                 <form id="RecoveryForm" @submit.prevent="submitRecoveryForm">
-                    <label for="login">Электронная почта</label>
+                    <label for="RecoveryEmail">Электронная почта аккаунта</label>
                     <div class="input-with-icon">
-                        <img src="assets/email-gray.png" 
-                            data-hover="assets/email-red.png" 
-                            class="input-icon icon-email"
-                            @mouseover="hoverIcon($event)"
-                            @mouseout="unhoverIcon($event)">
-                        <input id="RecoveryEmail" required>
+                        <img src="assets/email-gray.png" class="input-icon icon-email" alt="Email">
+                        <input type="email" id="RecoveryEmail" placeholder="example@mail.ru" required>
                     </div>
-                    <button type="submit">Подтвердить</button>
-                    <a href="#" @click.prevent="closeRecoveryModal" class="recovery-link">Вспомнили пароль?</a>
+                    <button type="submit">Отправить ссылку</button>
+                    <a href="#" @click.prevent="closeRecoveryModal" class="switch-auth-link">Вспомнили пароль? Назад</a>
                 </form>
             </div>
         </div>
 
-        
-        <div v-if="isAgreementModalOpen" class="modal-agreement" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
-            <div class="modal-content" @click.stop>
-                <span class="close" @click="closeAgreementModal">&times;</span>
+        <!-- Cookie-баннер -->
+        <div v-if="isCookieBannerVisible" class="cookie-banner">
+            <p>
+                ИП Чеклашова А. С. использует файлы cookie для корректной авторизации и обеспечения работы корзины.
+                Подробнее — в <a href="#" @click.prevent="openDocModal('cookies')">Политике файлов cookie</a>.
+            </p>
+            <button type="button" @click="acceptCookies" class="cookie-btn">Понятно</button>
+        </div>
 
-                <h2 style="text-align: center; margin-bottom: 1.5em;">Согласие на обработку персональных данных</h2>
-                <div style="text-indent: 2em; max-height: 60vh; overflow-y: auto; padding-right: 10px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333;">
+        <!-- Универсальное адаптивное модальное окно правовых документов -->
+        <div v-if="activeDocModal !== null" class="modal-agreement" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+            <div class="modal-content legal-modal-content" @click.stop>
+                <span class="close" @click="closeDocModal">&times;</span>
 
-                <!-- 1. Общие положения -->
-                <section style="background: #f9f9f9; border-left: 4px solid #9c131d; padding: 15px 20px; margin-bottom: 20px; border-radius: 0 8px 8px 0;">
-                    <h3 style="color: #9c131d; margin-top: 0;">1. Общие положения</h3>
-                    <p>
-                        Настоящим сервис <strong>«Коллекты от Софы»</strong> подтверждает обязательство бережно и ответственно относиться к обработке Ваших персональных данных.
-                        По всем вопросам, касающимся обработки данных, Вы можете обратиться:
-                    </p>
-                    <ul style="margin: 10px 0; padding-left: 20px; list-style-type: none;">
-                        <li style="margin-bottom: 5px;">- По электронной почте: <a href="mailto:s.polo2005@yandex.ru" style="color: #9c131d;">s.polo2005@yandex.ru</a></li>
-                        <li>- В сообщения группы: <a href="https://vk.com/sofascollect" target="_blank" rel="noopener" style="color: #9c131d;">https://vk.com/sofascollect</a></li>
-                    </ul>
-                </section>
+                <!-- 1. ПОЛИТИКА ПЕРСОНАЛЬНЫХ ДАННЫХ ДЛЯ ИП -->
+                <div v-if="activeDocModal === 'privacy'" class="legal-text-container">
+                    <h2>Политика обработки и защиты персональных данных сервиса «Коллекты от Софы»</h2>
+                    
+                    <section class="legal-section">
+                        <h3>1. Общие положения</h3>
+                        <p>1.1. Настоящая Политика определяет порядок сбора, систематизации, хранения и защиты персональных данных пользователей Индивидуальным предпринимателем Чеклашова Анна Сергеевна (далее — «Оператор»).</p>
+                        <p>1.2. Документ разработан в соответствии с п. 2 ч. 1 ст. 18.1 Федерального закона РФ от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+                        <p>1.3. Действие Политики распространяется на информацию, получаемую при использовании сайта, калькулятора тиражей, корзины заказов и форм связи.</p>
+                    </section>
 
-                <!-- 2. Состав обрабатываемых данных -->
-                <section style="margin-bottom: 20px;">
-                    <h3 style="color: #9c131d; margin-top: 0;">2. Состав обрабатываемых данных</h3>
-                    <p><strong>Для всех пользователей:</strong></p>
-                    <ul>
-                    <li>Логин, адрес электронной почты, пароль (хранящийся в зашифрованном виде);</li>
-                    <li>Cookie-файлы и данные сессий;</li>
-                    <li>История переписки в чате.</li>
-                    </ul>
+                    <section class="legal-section">
+                        <h3>2. Категории субъектов и состав обрабатываемых данных</h3>
+                        <p>2.1. В рамках платформы обрабатываются данные зарегистрированных авторов и заказчиков:</p>
+                        <ul>
+                            <li><strong>Идентификационные данные:</strong> фамилия, имя, отчество, творческий псевдоним/никнейм;</li>
+                            <li><strong>Контактные данные:</strong> номер телефона, адрес электронной почты, ссылка на страницу/паблик VK;</li>
+                            <li><strong>Данные доставки:</strong> почтовый адрес, индекс, ФИО получателя груза в РФ;</li>
+                            <li><strong>Технические данные:</strong> IP-адрес, тип и версия браузера, данные cookie-файлов, макеты изделий.</li>
+                        </ul>
+                        <p>2.2. Оператор не осуществляет обработку биометрических и специальных категорий персональных данных.</p>
+                    </section>
 
-                    <p><strong>Для покупателей:</strong></p>
-                    <ul>
-                    <li>Данные банковской карты (при оплате через эквайринг; обработка осуществляется платежным провайдером);</li>
-                    <li>ФИО, адрес пункта выдачи, номер телефона, почтовый индекс (при оформлении доставки).</li>
-                    </ul>
+                    <section class="legal-section">
+                        <h3>3. Цели и правовые основания обработки данных</h3>
+                        <p>3.1. Обработка данных осуществляется исключительно для:</p>
+                        <ul>
+                            <li>Регистрации и аутентификации в личном кабинете;</li>
+                            <li>Расчета стоимости и технической валидации макетов мерча;</li>
+                            <li>Заключения и исполнения договоров поставки и оферты;</li>
+                            <li>Взаимодействия с производственными фабриками в КНР и логистическими компаниями;</li>
+                            <li>Информирования о статусах тиража и трек-номерах доставки.</li>
+                        </ul>
+                        <p>3.2. Правовым основанием являются: ст. 6 № 152-ФЗ, Пользовательское соглашение и согласие Пользователя.</p>
+                    </section>
 
-                    <p><strong>Для мерчеделов:</strong></p>
-                    <ul>
-                    <li>Никнейм (творческий псевдоним);</li>
-                    <li>Ссылка на страницу ВКонтакте.</li>
-                    </ul>
-                </section>
+                    <section class="legal-section">
+                        <h3>4. Порядок хранения, локализация и трансграничная передача</h3>
+                        <p>4.1. В соответствии с ч. 5 ст. 18 № 152-ФЗ базы данных Оператора с персональными данными граждан РФ физически размещены на территории Российской Федерации.</p>
+                        <p>4.2. Оператор осуществляет трансграничную передачу данных на фабрики в Китайскую Народную Республику строго в объеме, необходимом для маркировки, изготовления образцов и международной перевозки партии груза (ст. 12 № 152-ФЗ).</p>
+                    </section>
 
-                <!-- 3. Цели обработки данных -->
-                <section style="margin-bottom: 20px;">
-                    <h3 style="color: #9c131d; margin-top: 0;">3. Цели обработки персональных данных</h3>
-                    <ul>
-                    <li>Предоставление услуг платформы;</li>
-                    <li>Оформление заказов и организация доставки;</li>
-                    <li>Обработка платежей через эквайринг;</li>
-                    <li>Исполнение налоговых обязательств, включая сбор и хранение фискальных данных;</li>
-                    <li>Обеспечение безопасности сервиса;</li>
-                    <li>Техническая поддержка пользователей.</li>
-                    </ul>
-                </section>
-
-                <!-- 4. Способы обработки данных -->
-                <section style="margin-bottom: 20px;">
-                    <h3 style="color: #9c131d; margin-top: 0;">4. Способы обработки персональных данных</h3>
-                    <ul>
-                    <li>Автоматизированная обработка в базе данных сайта;</li>
-                    <li>Передача данных платежным системам для обработки транзакций;</li>
-                    <li>Передача данных логистическим компаниям для организации доставки;</li>
-                    <li>Хранение данных в зашифрованном виде на защищённых серверах.</li>
-                    </ul>
-                </section>
-
-                <!-- 5. Сроки хранения данных -->
-                <section style="margin-bottom: 20px;">
-                    <h3 style="color: #9c131d; margin-top: 0;">5. Сроки хранения персональных данных</h3>
-                    <ul>
-                    <li>Данные аккаунта хранятся в течение 1 года после последней активности;</li>
-                    <li>Финансовые транзакции хранятся в течение 5 лет в соответствии с налоговым законодательством;</li>
-                    <li>Переписка в чате хранится в течение 6 месяцев.</li>
-                    </ul>
-                </section>
-
-                <!-- 6. Права субъекта данных -->
-                <section style="margin-bottom: 20px;">
-                    <h3 style="color: #9c131d; margin-top: 0;">6. Права субъекта персональных данных</h3>
-                    <p>Я подтверждаю, что ознакомлен(а) со следующими правами:</p>
-                    <ul>
-                    <li>Отозвать согласие на обработку данных посредством электронной почты оператора или через личный кабинет;</li>
-                    <li>Требовать уточнения, изменения или удаления персональных данных;</li>
-                    <li>Обращаться с жалобами в соответствующие контролирующие органы.</li>
-                    </ul>
-                    <p><strong>Последствия отзыва согласия:</strong></p>
-                    <p>В случае отзыва согласия сервис прекратит обработку персональных данных, что может привести к невозможности:</p>
-                    <ul>
-                    <li>Использования учетной записи;</li>
-                    <li>Оформления новых заказов;</li>
-                    <li>Получения услуг платформы.</li>
-                    </ul>
-                </section>
-
-                <!-- 7. Заключительные положения -->
-                <section>
-                    <h3 style="color: #9c131d; margin-top: 0;">7. Заключительные положения</h3>
-                    <ul>
-                    <li>Оператор принимает все необходимые технические и организационные меры для защиты персональных данных в соответствии с Федеральным законом №152-ФЗ;</li>
-                    <li>При изменении политики обработки данных пользователи будут своевременно уведомлены посредством размещения информации на сайте;</li>
-                    <li>Данное согласие действует до момента его отзыва, но не менее срока, необходимого для достижения целей обработки персональных данных.</li>
-                    </ul>
-                </section>
-
+                    <section class="legal-section">
+                        <h3>5. Меры защиты и контакты Оператора</h3>
+                        <p>5.1. Оператор применяет технические и организационные меры безопасности по ст. 19 № 152-ФЗ (шифрование SSL/TLS, разграничение прав, хэширование паролей bcrypt).</p>
+                        <p>5.2. Официальные контакты для обращений субъектов персональных данных:</p>
+                        <p><strong>Оператор:</strong> Индивидуальный предприниматель Чеклашова Анна Сергеевна<br>
+                        <strong>Email для запросов и отзыва согласий:</strong> <a href="mailto:s.polo2005@yandex.ru">s.polo2005@yandex.ru</a><br>
+                        <strong>Сообщество:</strong> <a href="https://vk.com/sofascollect" target="_blank" rel="noopener">https://vk.com/sofascollect</a></p>
+                    </section>
                 </div>
+
+                <!-- 2. ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ И ПРАВИЛА ПРОИЗВОДСТВА МЕРЧА ДЛЯ ИП -->
+                <div v-if="activeDocModal === 'terms'" class="legal-text-container">
+                    <h2>Пользовательское соглашение и правила производства мерча «Коллекты от Софы»</h2>
+                    
+                    <section class="legal-section">
+                        <h3>1. Общие положения и предмет</h3>
+                        <p>1.1. Настоящее Соглашение определяет порядок использования платформы «Коллекты от Софы» и регулирует отношения между ИП Чеклашова Анна Сергеевна (далее — «Сервис») и Заказчиком (художником, автором, заказчиком тиража) при организации производства мерча в Китайской Народной Республике (КНР).</p>
+                        <p>1.2. Оформляя заказ на тираж, загружая файлы или регистрируясь на сайте, Пользователь в полном объеме принимает условия Соглашения.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h3>2. Интеллектуальная собственность и гарантии автора </h3>
+                        <p>2.1. Заказчик самостоятельно определяет графическое содержание и дизайн макетов (акриловые стенды, брелоки, открытки, металлические значки, текстиль и др.).</p>
+                        <p>2.2. Заказчик безоговорочно гарантирует, что:</p>
+                        <ul>
+                            <li>Является законным автором либо правообладателем загружаемых макетов;</li>
+                            <li>Тиражирование изображений не нарушает авторских прав, прав на товарные знаки брендов третьих лиц;</li>
+                            <li>Материалы не содержат запрещенной законодательством РФ информации.</li>
+                        </ul>
+                        <p>2.3. Загрузка макетов не влечет передачи исключительных прав Сервису. Автор предоставляет Сервису неисключительное право на использование изображений исключительно для проверки параметров и изготовления тиража на партнерских фабриках в Китае.</p>
+                        <p>2.4. В случае претензий третьих лиц Заказчик обязуется урегулировать спор своими силами и компенсировать Сервису понесенные убытки в полном объеме.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h3>3. Автоматическая проверка, производство и допуски</h3>
+                        <p>3.1. Сервис проводит автоматическую проверку файлов на базовые критерии (разрешение DPI, цветовой профиль CMYK, наличие слоев реза и белил).</p>
+                        <p>3.2. <strong>Технологические допуски:</strong> Заказчик принимает наличие производственных допусков фабричного мерча:</p>
+                        <ul>
+                            <li>Незначительное отклонение цветопередачи готового изделия от экранного монитора (разница профилей RGB и CMYK/Pantone);</li>
+                            <li>Смещение контура реза (акрил, дерево, бумага) в пределах 0.5–1.5 мм;</li>
+                            <li>Технологический процент допустимого брака партии (до 2–3% тиража), при превышении которого оформляется перевыпуск или соразмерная компенсация.</li>
+                        </ul>
+                    </section>
+
+                    <section class="legal-section">
+                        <h3>4. Сроки, форс-мажор и доставка</h3>
+                        <p>4.1. Сроки международной доставки из КНР носят ориентировочный характер и могут увеличиваться при таможенных задержках или праздничных днях в КНР.</p>
+                        <p>4.2. Сервис информирует Заказчика о движении заказа и передает трек-номер после передачи груза транспортной компании в РФ.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h3>5. Реквизиты Индивидуального предпринимателя</h3>
+                        <p><strong>Исполнитель:</strong> Индивидуальный предприниматель Чеклашова Анна Сергеевна<br>
+                        <strong>ИНН:</strong> 710606895901<br>
+                        <strong>ОГРНИП:</strong> 323710000067112<br>
+                        <strong>Электронная почта:</strong> <a href="mailto:s.polo2005@yandex.ru">s.polo2005@yandex.ru</a><br>
+                        <strong>Официальное сообщество:</strong> <a href="https://vk.com/sofascollect" target="_blank" rel="noopener">https://vk.com/sofascollect</a><br>
+                        <strong>Техническая поддержка:</strong> <a href="mailto:s.polo2005@yandex.ru">s.polo2005@yandex.ru</a></p>
+                    </section>
+                </div>
+
+                <!-- 3. ПОЛИТИКА ФАЙЛОВ COOKIE ДЛЯ ИП -->
+                <div v-if="activeDocModal === 'cookies'" class="legal-text-container">
+                    <h2>Политика использования файлов cookie и веб-аналитики платформы «Коллекты от Софы»</h2>
+                    
+                    <section class="legal-section">
+                        <h3>1. Что такое файлы cookie</h3>
+                        <p>Файлы cookie — это небольшие текстовые фрагменты данных, сохраняемые на устройстве пользователя для запоминания настроек сессии, авторизации и работы сайта.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h3>2. Категории используемых cookie</h3>
+                        <p>ИП Чеклашова А. С. применяет следующие группы cookie:</p>
+                        <ul>
+                            <li><strong>Строго необходимые (технические) cookie:</strong> сессионный идентификатор (`session-name`), обеспечивающий авторизацию и добавление товаров в корзину. Без них заказ невозможен;</li>
+                            <li><strong>Аналитические cookie:</strong> фиксация стабильности взаимодействия с каталогом и чат-ботом поддержки;</li>
+                            <li><strong>Функциональные cookie:</strong> сохранение выбранных параметров фильтрации мерча.</li>
+                        </ul>
+                    </section>
+
+                    <section class="legal-section">
+                        <h3>3. Управление файлами cookie</h3>
+                        <p>Пользователь вправе отключить cookie в параметрах безопасности браузера (Chrome, Яндекс.Браузер, Firefox, Safari). При полной блокировке функционал личного кабинета и оплаты тиражей будет ограничен.</p>
+                    </section>
+                </div>
+
             </div>
         </div>
-                
     </main>
 
+    <!-- Подвал сайта -->
     <footer>
-        <div class="attributions">
-            <p>Иконки были выполнены:
-            <a href="https://www.flaticon.com/ru/free-icons/-" title="Эл. адрес иконки">Freepik - Flaticon</a>
-            </p>
+        <div class="footer-legal-links">
+            <a href="#" @click.prevent="openDocModal('privacy')">Политика обработки персональных данных</a>
+            <span class="footer-sep">|</span>
+            <a href="#" @click.prevent="openDocModal('terms')">Пользовательское соглашение и оферта ИП</a>
+            <span class="footer-sep">|</span>
+            <a href="#" @click.prevent="openDocModal('cookies')">Политика Cookies</a>
         </div>
-        <p>&copy; 2025 Sofa. Все права защищены.</p>
+        <div class="attributions">
+            <p>ИП Чеклашова А. С. &copy; 2025–2026 Sofa. Все права защищены.</p>
+        </div>
     </footer>
     
-    <!-- Подключаем Vue скрипт -->
     <script src="scripts/Sofa.js"></script>
-    
-    <!-- Подключаем скрипт для слайдера отзывов -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const track = document.getElementById('sliderTrack');
-            const cards = document.querySelectorAll('.testimonial-card');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            if (!track || !cards.length || !prevBtn || !nextBtn) return;
-
-            let currentIndex = 0;
-            const totalCards = cards.length;
-
-            function updateSlider() {
-                const cardWidth = cards[0].offsetWidth;
-                const gap = 30; 
-                const moveAmount = (cardWidth + gap) * currentIndex;
-                
-                track.style.transform = `translateX(-${moveAmount}px)`;
-
-                cards.forEach((card, index) => {
-                    if (index === currentIndex) {
-                        card.classList.add('active');
-                    } else {
-                        card.classList.remove('active');
-                    }
-                });
-            }
-
-            nextBtn.addEventListener('click', () => {
-                if (currentIndex < totalCards - 1) {
-                    currentIndex++;
-                } else {
-                    currentIndex = 0;
-                }
-                updateSlider();
-            });
-
-            prevBtn.addEventListener('click', () => {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                } else {
-                    currentIndex = totalCards - 1;
-                }
-                updateSlider();
-            });
-
-            updateSlider();
-            window.addEventListener('resize', updateSlider);
-        });
-    </script>
 </div>
 </body>
 </html>

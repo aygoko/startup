@@ -1,85 +1,32 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const dropdownMenuToggle = document.getElementById('DropdownMenu');
-    const dropdownMenu = document.getElementById('dropdownMenu');
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menuToggle');
 
-    if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
+    // Мобильный гамбургер
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             sidebar.classList.toggle('active');
-        });
-    }
-
-    // Глобальный перехватчик необработанных ошибок
-    window.addEventListener('error', function(event) {
-        console.warn('⚠️ Перехвачена глобальная ошибка:', event.error);
-    });
-
-    // Перехватчик ошибок промисов
-    window.addEventListener('unhandledrejection', function(event) {
-        console.warn('⚠️ Перехвачена ошибка промиса:', event.reason);
-        event.preventDefault();
-    });
-
-    if (dropdownMenuToggle && dropdownMenu) {
-        let isCursorOnMenu = false;
-        let isCursorOnButton = false;
-        let closeTimeout;
-
-        const bufferZone = document.createElement('div');
-        bufferZone.style.position = 'absolute';
-        bufferZone.style.width = '100%';
-        bufferZone.style.height = '10px';
-        bufferZone.style.bottom = '-10px';
-        bufferZone.style.zIndex = '1000';
-        dropdownMenuToggle.parentNode.insertBefore(bufferZone, dropdownMenu);
-
-        dropdownMenuToggle.addEventListener('click', function(event) {
-            event.stopPropagation();
-            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-        });
-
-        dropdownMenuToggle.addEventListener('mouseenter', () => isCursorOnButton = true);
-        dropdownMenuToggle.addEventListener('mouseleave', () => isCursorOnButton = false);
-        bufferZone.addEventListener('mouseenter', () => isCursorOnButton = true);
-        bufferZone.addEventListener('mouseleave', () => isCursorOnButton = false);
-        dropdownMenu.addEventListener('mouseenter', () => isCursorOnMenu = true);
-        dropdownMenu.addEventListener('mouseleave', () => isCursorOnMenu = false);
-
-        document.addEventListener('mousemove', function() {
-            clearTimeout(closeTimeout);
-            
-            if (!isCursorOnButton && !isCursorOnMenu && dropdownMenu.style.display === 'block') {
-                closeTimeout = setTimeout(() => {
-                    dropdownMenu.style.display = 'none';
-                }, 25);
-            }
         });
 
         document.addEventListener('click', function(event) {
-            if (!dropdownMenu.contains(event.target) && 
-                !dropdownMenuToggle.contains(event.target) && 
-                !bufferZone.contains(event.target)) {
-                dropdownMenu.style.display = 'none';
+            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                sidebar.classList.remove('active');
             }
         });
     }
 
-    // Безопасная проверка авторизации
-    const safeJsonParse = async (response) => {
-        if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
-                return { success: false };
-            }
-            throw new Error(`HTTP ошибка: ${response.status}`);
-        }
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-            return response.json();
-        }
-        return { success: false };
-    };
+    // Глобальный перехватчик ошибок
+    window.addEventListener('error', function(event) {
+        console.warn('⚠️ Глобальная ошибка:', event.error);
+    });
 
+    window.addEventListener('unhandledrejection', function(event) {
+        console.warn('⚠️ Ошибка промиса:', event.reason);
+        event.preventDefault();
+    });
+
+    // Обработка токена регистрации из URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
@@ -89,25 +36,22 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token: token })
         })
-        .then(safeJsonParse)
+        .then(res => res.json())
         .then(data => {
             window.history.replaceState({}, document.title, window.location.pathname);
-            
             if (data && data.success) {
-                console.log("✅ Токен успешно подтвержден");
-            } else {
-                console.warn("⚠️ Токен просрочен или недействителен.");
+                console.log("✅ Почта успешно подтверждена");
             }
         })
-        .catch(error => {
-            console.warn("❌ Ошибка при проверке токена:", error);
+        .catch(err => {
+            console.warn("❌ Ошибка подтверждения токена:", err);
             window.history.replaceState({}, document.title, window.location.pathname);
         });
     }
 });
 
 // ==========================================================
-// ИНИЦИАЛИЗАЦИЯ VUE (ЭТО ТО, ЧЕГО НЕ ХВАТАЛО!)
+// VUE ПРИЛОЖЕНИЕ
 // ==========================================================
 new Vue({
     el: '#app',
@@ -143,7 +87,6 @@ new Vue({
                 newPrice: 64,
             },
         ],
-        isMouseDownOnModal: false,
         isMouseDownOnBackdrop: false,
         isUserModalOpen: false,
         userType: 'buyer',
@@ -152,42 +95,48 @@ new Vue({
         isPassword2Visible: false,
         isPasswordLoginVisible: false,
         isRecoveryModalOpen: false,
-        isAgreementModalOpen: false,
+        
+        // Модальное окно правовых документов ИП и Cookie
+        activeDocModal: null, // null | 'privacy' | 'terms' | 'cookies'
+        isCookieBannerVisible: false,
     },
     mounted() {
         this.fetchGoods();
+        this.initSlider();
+
+        // Проверяем согласие на Cookies в localStorage
+        if (!localStorage.getItem('sofa_cookies_accepted')) {
+            this.isCookieBannerVisible = true;
+        }
     },
     methods: {
+        closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.remove('active');
+        },
         fetchGoods() {
             fetch('/sofa/getgoods')
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`Ошибка: ${response.status} ${response.statusText} - ${text}`);
-                    });
-                }
-                return response.json();
+            .then(res => {
+                if (res.ok) return res.json();
+                return [];
             })
             .then(data => {
                 this.goods = data;
             })
-            .catch(error => {
-                console.error('Ошибка загрузки товаров:', error);
-            });
-        },          
+            .catch(() => {});
+        },
         showNotification(message, type) {
+            const container = document.getElementById('notifications');
+            if (!container) return;
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.innerText = message;
-
-            document.getElementById('notifications').appendChild(notification);
-            notification.style.display = 'block';
+            container.appendChild(notification);
 
             setTimeout(() => {
-                notification.style.display = 'none';
                 notification.remove();
             }, 3000);
-        },  
+        },
         handleMouseDown(event) {
             if (event.target === event.currentTarget) {
                 this.isMouseDownOnBackdrop = true;
@@ -195,43 +144,67 @@ new Vue({
         },
         handleMouseUp(event) {
             if (this.isMouseDownOnBackdrop && event.target === event.currentTarget) {
-                if (this.isUserModalOpen) {
-                    if(this.isAgreementModalOpen) {
-                        this.closeAgreementModal();
-                    } else {
-                        this.closeUserModal();
-                    }
+                if (this.activeDocModal !== null) {
+                    this.closeDocModal();
+                } else if (this.isUserModalOpen) {
+                    this.closeUserModal();
                 } else if (this.isLogInModalOpen) {
-                    if(this.isRecoveryModalOpen) {
-                        this.closeRecoveryModal();
-                    } else {
-                        this.closeLogInModal();
-                    }
+                    this.closeLogInModal();
+                } else if (this.isRecoveryModalOpen) {
+                    this.closeRecoveryModal();
                 }
             }
             this.isMouseDownOnBackdrop = false;
         },
-        openAgreementModal() {
-            this.isAgreementModalOpen = true;
+        openDocModal(type) {
+            this.activeDocModal = type;
+            this.closeSidebar();
         },
-        closeAgreementModal(){
-            this.isAgreementModalOpen = false;
+        closeDocModal() {
+            this.activeDocModal = null;
+        },
+        acceptCookies() {
+            localStorage.setItem('sofa_cookies_accepted', 'true');
+            this.isCookieBannerVisible = false;
         },
         openUserModal() {  
+            this.closeSidebar();
+            this.isLogInModalOpen = false;
             this.isUserModalOpen = true;
+        },
+        closeUserModal(){
+            this.isUserModalOpen = false;
         },
         selectUserType(type) {
             this.userType = type;
             const merchantButton = document.getElementById("merchantButton");
             const buyerButton = document.getElementById("buyerButton");
             if (type === 'buyer') {
-                buyerButton.classList.add("selected");
-                merchantButton.classList.remove("selected");
+                if (buyerButton) buyerButton.classList.add("selected");
+                if (merchantButton) merchantButton.classList.remove("selected");
+            } else {
+                if (merchantButton) merchantButton.classList.add("selected");
+                if (buyerButton) buyerButton.classList.remove("selected");
             }
-            if (type === 'merchant') {
-                merchantButton.classList.add("selected");
-                buyerButton.classList.remove("selected");
-            }
+        },
+        togglePasswordVisibility() { this.isPasswordVisible = !this.isPasswordVisible; },
+        togglePassword2Visibility() { this.isPassword2Visible = !this.isPassword2Visible; },
+        togglePasswordLoginVisibility() { this.isPasswordLoginVisible = !this.isPasswordLoginVisible; },
+        
+        openLogInModal() {
+            this.closeSidebar();
+            this.closeUserModal();
+            this.isLogInModalOpen = true;
+        },
+        closeLogInModal(){
+            this.isLogInModalOpen = false;
+        },
+        openRecoveryModal(){
+            this.closeLogInModal();
+            this.isRecoveryModalOpen = true;
+        },
+        closeRecoveryModal(){
+            this.isRecoveryModalOpen = false;
         },
         submitUserForm() {
             const login = document.getElementById('user-login').value;
@@ -264,53 +237,15 @@ new Vue({
             })
             .then(response => {
                 if (!response.ok) {
-                    return response.text().then(text => {
-                        if (text.includes('PasswordIsTooWeak')) {
-                            return this.showNotification('Пароль слишком слабый.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithEmailAndNoToken')) {
-                            return this.showNotification('Пользователь с таким email уже существует.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithEmailAndHasToken')) {
-                            return this.showNotification('На эту почту уже отправлена ссылка на подтверждение.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithLogin')) {
-                            return this.showNotification('Это имя пользователя уже занято.', 'error');
-                        } else if (text.includes('NicknameAlreadyExists')) {
-                            return this.showNotification('Этот никнейм уже занят.', 'error');
-                        } else if (text.includes('AuthorVkAlreadyExists')) {
-                            return this.showNotification('Эта ссылка на VK уже занята.', 'error');
-                        } else if (text.includes('UserAlreadySignUp')) {
-                            return this.showNotification('Пользователь уже зарегистрирован на сайте.', 'error');
-                        } else if (text.includes('Badrequest')) {
-                            return this.showNotification('Ошибка базы данных. Попробуйте позже.', 'error');
-                        } else if (text.includes('InternalServerError')) {
-                            return this.showNotification('Ошибка сервера. Попробуйте позже.', 'error');
-                        } else {
-                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
-                        }
-                    });
+                    this.showNotification('Ошибка регистрации. Проверьте введенные данные.', 'error');
                 } else {
-                    this.showNotification('Подтвердите аккаунт в своем почтовом ящике!', 'success');
+                    this.showNotification('Письмо с подтверждением отправлено на почту!', 'success');
+                    this.closeUserModal();
                 }
             })
-            .catch((error) => {
-                console.error('Ошибка:', error);
-                this.showNotification('Ошибка регистрации. Попробуйте еще раз.', 'error');
+            .catch(() => {
+                this.showNotification('Ошибка соединения с сервером.', 'error');
             });
-        },
-        closeUserModal(){
-            this.isUserModalOpen = false;
-        },
-        openLogInModal() {
-            this.closeUserModal();
-            this.isLogInModalOpen = true;
-            const signUpLogin = document.getElementById('user-login');
-            const signUpEmail = document.getElementById('user-email');
-            const signUpPassword = document.getElementById('user-password');
-            const signUpPassword2 = document.getElementById('user-password-repeat');
-        
-            if (signUpLogin) signUpLogin.value = '';
-            if (signUpEmail) signUpEmail.value = '';
-            if (signUpPassword) signUpPassword.value = '';
-            if (signUpPassword2) signUpPassword2.value = '';
         },
         submitLogInForm() {
             const login = document.getElementById('auth-email-login-nickname').value;
@@ -326,173 +261,63 @@ new Vue({
             })
             .then(response => {
                 if (!response.ok) {
-                    return response.text().then(text => {
-                        if (text.includes('UserNotFound')) {
-                            return this.showNotification('Пользователь не найден.', 'error');
-                        } else if (text.includes('UserHasToken')) {
-                            return this.showNotification('Аккаунт на подтверждении.', 'error');
-                        } else if (text.includes('UserHasRecoveryToken')) {
-                            return this.showNotification('Аккаунт на восстановлении.', 'error');
-                        } else if (text.includes('UserIsBanned')) {
-                            return this.showNotification('Пользователь забанен.', 'error');
-                        } else if (text.includes('InvalidCredentials')) {
-                            return this.showNotification('Неверный пароль.', 'error');
-                        } else if (text.includes('InternalServerError')) {
-                            return this.showNotification('Ошибка сервера!', 'error');
-                        } else if (text.includes('Bad request')) {
-                            return this.showNotification('Плохое соединение!', 'error');
-                        } else {
-                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
-                        }
-                    });
+                    this.showNotification('Неверный логин или пароль.', 'error');
                 } else {
-                    this.showNotification('Вход выполнен успешно!', 'success');
+                    this.showNotification('Вход выполнен!', 'success');
                     window.location.href = '/public/User.html';
                 }
             })
-            .catch((error) => {
-                console.error('Ошибка:', error);
-                this.showNotification('Ошибка входа. Попробуйте еще раз.', 'error');
+            .catch(() => {
+                this.showNotification('Ошибка сети при авторизации.', 'error');
             });
         },
-        closeLogInModal(){
-            this.isLogInModalOpen = false;
-        },
-        openRecoveryModal(){
-            this.isRecoveryModalOpen = true;
-        },
-        submitRecoveryForm(){
+        submitRecoveryForm() {
             const email = document.getElementById('RecoveryEmail').value;
             fetch('/Recovery', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: email,
-                }),
+                body: JSON.stringify({ email: email }),
             })
             .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        if (text.includes('UserNotFound')) {
-                            return this.showNotification('Пользователь не найден.', 'error');
-                        } else if (text.includes('UserIsBanned')) {
-                            return this.showNotification('Пользователь забанен.', 'error');
-                        } else if (text.includes('UserHasToken')) {
-                            return this.showNotification('Аккаунт на подтверждении, проверьте почту.', 'error');
-                        } else if (text.includes('UserHasRecoveryToken')) {
-                            return this.showNotification('Аккаунт на восстановлении, проверьте почту.', 'error');
-                        } else if (text.includes('InternalServerError')) {
-                            return this.showNotification('Ошибка сервера!', 'error');
-                        } else if (text.includes('Bad request')) {
-                            return this.showNotification('Плохое соединение!', 'error');
-                        } else {
-                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
-                        }
-                    });
-                } else {
-                    this.showNotification('Письмо с ссылкой на восстановление пароля отправлено!.', 'success');
+                if (response.ok) {
+                    this.showNotification('Инструкция отправлена на почту!', 'success');
                     this.closeRecoveryModal();
+                } else {
+                    this.showNotification('Пользователь с такой почтой не найден.', 'error');
                 }
             })
-            .catch((error) => {
-                console.error('Ошибка:', error);
-                this.showNotification('Ошибка входа. Попробуйте еще раз.', 'error');
+            .catch(() => {
+                this.showNotification('Ошибка сети.', 'error');
             });
         },
-        closeRecoveryModal(){
-            this.isRecoveryModalOpen = false;
-        },
-        togglePasswordVisibility() {
-            this.isPasswordVisible = !this.isPasswordVisible;
-        },
-        togglePassword2Visibility() {
-            this.isPassword2Visible = !this.isPassword2Visible;
-        },
-        togglePasswordLoginVisibility() {
-            this.isPasswordLoginVisible = !this.isPasswordLoginVisible;
-        },
-    },
-    watch: {
-        isUserModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
-            });
-        },
-        isLogInModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
-            });
-        },
-        isRecoveryModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal-recovery');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
-            });
-        },
-        isAgreementModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal-agreement');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
-            });
-        }
-    }
-});
+        initSlider() {
+            const track = document.getElementById('sliderTrack');
+            const cards = document.querySelectorAll('.testimonial-card');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (!track || !cards.length || !prevBtn || !nextBtn) return;
 
-document.addEventListener('DOMContentLoaded', () => {
-    const track = document.getElementById('sliderTrack');
-    const cards = document.querySelectorAll('.testimonial-card');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    
-    if (!track || !cards.length || !prevBtn || !nextBtn) return; // Защита от ошибок, если элементов нет
+            let currentIndex = 0;
+            const totalCards = cards.length;
 
-    let currentIndex = 0;
-    const totalCards = cards.length;
-
-    function updateSlider() {
-        const cardWidth = cards[0].offsetWidth;
-        const gap = 30; 
-        const moveAmount = (cardWidth + gap) * currentIndex;
-        
-        track.style.transform = `translateX(-${moveAmount}px)`;
-
-        cards.forEach((card, index) => {
-            if (index === currentIndex) {
-                card.classList.add('active');
-            } else {
-                card.classList.remove('active');
+            function updateSlider() {
+                const moveAmount = 100 * currentIndex;
+                track.style.transform = `translateX(-${moveAmount}%)`;
+                cards.forEach((card, index) => {
+                    card.classList.toggle('active', index === currentIndex);
+                });
             }
-        });
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex < totalCards - 1) ? currentIndex + 1 : 0;
+                updateSlider();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalCards - 1;
+                updateSlider();
+            });
+        }
     }
-
-    nextBtn.addEventListener('click', () => {
-        if (currentIndex < totalCards - 1) {
-            currentIndex++;
-        } else {
-            currentIndex = 0;
-        }
-        updateSlider();
-    });
-
-    prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex--;
-        } else {
-            currentIndex = totalCards - 1;
-        }
-        updateSlider();
-    });
-
-    updateSlider();
-    window.addEventListener('resize', updateSlider);
 });
