@@ -24,4 +24,4 @@
 
 ## Ссылка на лендинг
 
-🔗 **[...]**
+🔗 **http://landing.merchotsofy.ru/**
