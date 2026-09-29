@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Логика выпадающего меню (если оно есть)
     if (dropdownMenuToggle && dropdownMenu) {
         dropdownMenuToggle.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -83,7 +82,7 @@ new Vue({
         isPassword2Visible: false,
         isPasswordLoginVisible: false,
         isRecoveryModalOpen: false,
-        isAgreementModalOpen: false, // ✅ ДОБАВЛЕНО: чтобы не было ошибки Vue warn
+        isAgreementModalOpen: false,
         activeDocModal: null,
         isCookieBannerVisible: false,
     },
@@ -95,7 +94,6 @@ new Vue({
         }
     },
     methods: {
-        // ✅ ДОБАВЛЕНО: Методы для смены иконок при наведении (из твоего HTML)
         hoverIcon(event) {
             const img = event.target;
             if (!img.dataset.originalSrc) {
@@ -109,7 +107,6 @@ new Vue({
                 img.src = img.dataset.originalSrc;
             }
         },
-        
         closeSidebar() {
             const sidebar = document.getElementById('sidebar');
             if (sidebar) sidebar.classList.remove('active');
@@ -192,6 +189,16 @@ new Vue({
             this.closeSidebar();
             this.closeUserModal();
             this.isLogInModalOpen = true;
+            
+            // Очистка полей при открытии
+            const signUpLogin = document.getElementById('user-login');
+            const signUpEmail = document.getElementById('user-email');
+            const signUpPassword = document.getElementById('user-password');
+            const signUpPassword2 = document.getElementById('user-password-repeat');
+            if (signUpLogin) signUpLogin.value = '';
+            if (signUpEmail) signUpEmail.value = '';
+            if (signUpPassword) signUpPassword.value = '';
+            if (signUpPassword2) signUpPassword2.value = '';
         },
         closeLogInModal() {
             this.isLogInModalOpen = false;
@@ -317,6 +324,41 @@ new Vue({
             prevBtn.addEventListener('click', () => {
                 currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalCards - 1;
                 updateSlider();
+            });
+        }
+    },
+    // ✅ ДОБАВЛЕНО: Принудительное управление видимостью модалок через CSS
+    watch: {
+        isUserModalOpen(newValue) {
+            this.$nextTick(() => {
+                const modal = document.querySelector('.modal'); // Простая модалка
+                if (modal) {
+                    modal.style.display = newValue ? 'flex' : 'none';
+                }
+            });
+        },
+        isLogInModalOpen(newValue) {
+            this.$nextTick(() => {
+                const modal = document.querySelector('.modal');
+                if (modal) {
+                    modal.style.display = newValue ? 'flex' : 'none';
+                }
+            });
+        },
+        isRecoveryModalOpen(newValue) {
+            this.$nextTick(() => {
+                const modal = document.querySelector('.modal-recovery');
+                if (modal) {
+                    modal.style.display = newValue ? 'flex' : 'none';
+                }
+            });
+        },
+        isAgreementModalOpen(newValue) {
+            this.$nextTick(() => {
+                const modal = document.querySelector('.modal-agreement');
+                if (modal) {
+                    modal.style.display = newValue ? 'flex' : 'none';
+                }
             });
         }
     }
