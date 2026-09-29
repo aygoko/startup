@@ -78,11 +78,6 @@ func main() {
 		},
 	})
 
-	app.Use(func(c *fiber.Ctx) error {
-		c.Set("Content-Type", "application/json; charset=utf-8")
-		return c.Next()
-	})
-
 	// Глобальные мидлвары
 	app.Use(logger.New())
 
