@@ -327,38 +327,5 @@ new Vue({
             });
         }
     },
-    watch: {
-        isUserModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
-                }
-            });
-        },
-        isLogInModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
-                }
-            });
-        },
-        isRecoveryModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal-recovery');
-                if (modal) {
-                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
-                }
-            });
-        },
-        isAgreementModalOpen(newValue) {
-            this.$nextTick(() => {
-                const modal = document.querySelector('.modal-agreement');
-                if (modal) {
-                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
-                }
-            });
-        }
-    }
+    
 });

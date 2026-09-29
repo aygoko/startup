@@ -221,7 +221,6 @@ footer {
     font-size: large;
 }
 
-/* ✅ ИСПРАВЛЕНО: убрано visibility: hidden, display: none вместо flex */
 .modal-recovery, .modal-agreement, .modal {
     background-color: rgba(0, 0, 0, 0.4);
     height: 100%;
@@ -229,10 +228,9 @@ footer {
     position: fixed;
     top: 0;
     width: 100%;
-    display: none; /* Было flex — меняем на none. JS будет ставить flex */
+    display: flex;
     justify-content: center;
     align-items: center;
-    /* visibility: hidden — УДАЛЕНО, это был главный враг */
 }
 
 .modal {
