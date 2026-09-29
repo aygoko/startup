@@ -1,3 +1,8 @@
+// ====================================================================
+// ВАЖНО: Замени этот IP на реальный IP-адрес твоего VPS сервера!
+// ====================================================================
+const API_URL = 'http://147.45.147.149:8080'; 
+
 document.addEventListener('DOMContentLoaded', function() {
     const dropdownMenuToggle = document.getElementById('DropdownMenu');
     const dropdownMenu = document.getElementById('dropdownMenu');
@@ -10,15 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Глобальный перехватчик необработанных ошибок
     window.addEventListener('error', function(event) {
         console.warn('⚠️ Перехвачена глобальная ошибка:', event.error);
     });
 
-    // Перехватчик ошибок промисов
     window.addEventListener('unhandledrejection', function(event) {
-        console.warn('⚠️ Перехвачена ошибка промиса:',
-             event.reason);
+        console.warn('⚠️ Перехвачена ошибка промиса:', event.reason);
         event.preventDefault();
     });
 
@@ -49,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.addEventListener('mousemove', function() {
             clearTimeout(closeTimeout);
-            
             if (!isCursorOnButton && !isCursorOnMenu && dropdownMenu.style.display === 'block') {
                 closeTimeout = setTimeout(() => {
                     dropdownMenu.style.display = 'none';
@@ -66,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Безопасная проверка авторизации
     const safeJsonParse = async (response) => {
         if (!response.ok) {
             if (response.status === 401 || response.status === 403) {
@@ -85,15 +85,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const token = urlParams.get('token');
 
     if (token) {
-        fetch('/api/checkToken', {
+        // ИСПРАВЛЕНО: добавлен API_URL
+        fetch(`${API_URL}/api/checkToken`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: 'include',
             body: JSON.stringify({ token: token })
         })
         .then(safeJsonParse)
         .then(data => {
             window.history.replaceState({}, document.title, window.location.pathname);
-            
             if (data && data.success) {
                 console.log("✅ Токен успешно подтвержден");
             } else {
@@ -108,41 +109,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ==========================================================
-// ИНИЦИАЛИЗАЦИЯ VUE (ЭТО ТО, ЧЕГО НЕ ХВАТАЛО!)
+// ИНИЦИАЛИЗАЦИЯ VUE
 // ==========================================================
 new Vue({
     el: '#app',
     data: {
         goods: [],
         circulationItems: [
-            {
-                image: "assets/картхолдер.png",
-                name: "Картхолдеры",
-                stock: 45,
-                oldPrice: 150,
-                newPrice: 120,
-            },
-            {
-                image: "assets/наклейки.png",
-                name: "Объёмные наклейки",
-                stock: 32,
-                oldPrice: 80,
-                newPrice: 64,
-            },
-            {
-                image: "assets/стенд.png",
-                name: "Стенды с блёстками",
-                stock: 32,
-                oldPrice: 80,
-                newPrice: 64,
-            },
-            {
-                image: "assets/биндер.png",
-                name: "Биндеры",
-                stock: 32,
-                oldPrice: 80,
-                newPrice: 64,
-            },
+            { image: "assets/картхолдер.png", name: "Картхолдеры", stock: 45, oldPrice: 150, newPrice: 120 },
+            { image: "assets/наклейки.png", name: "Объёмные наклейки", stock: 32, oldPrice: 80, newPrice: 64 },
+            { image: "assets/стенд.png", name: "Стенды с блёстками", stock: 32, oldPrice: 80, newPrice: 64 },
+            { image: "assets/биндер.png", name: "Биндеры", stock: 32, oldPrice: 80, newPrice: 64 },
         ],
         isMouseDownOnModal: false,
         isMouseDownOnBackdrop: false,
@@ -160,7 +137,8 @@ new Vue({
     },
     methods: {
         fetchGoods() {
-            fetch('/sofa/getgoods')
+            // ИСПРАВЛЕНО: добавлен API_URL
+            fetch(`${API_URL}/sofa/getgoods`)
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
@@ -177,11 +155,12 @@ new Vue({
             });
         },          
         showNotification(message, type) {
+            const container = document.getElementById('notifications');
+            if (!container) return;
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.innerText = message;
-
-            document.getElementById('notifications').appendChild(notification);
+            container.appendChild(notification);
             notification.style.display = 'block';
 
             setTimeout(() => {
@@ -226,12 +205,12 @@ new Vue({
             const merchantButton = document.getElementById("merchantButton");
             const buyerButton = document.getElementById("buyerButton");
             if (type === 'buyer') {
-                buyerButton.classList.add("selected");
-                merchantButton.classList.remove("selected");
+                if(buyerButton) buyerButton.classList.add("selected");
+                if(merchantButton) merchantButton.classList.remove("selected");
             }
             if (type === 'merchant') {
-                merchantButton.classList.add("selected");
-                buyerButton.classList.remove("selected");
+                if(merchantButton) merchantButton.classList.add("selected");
+                if(buyerButton) buyerButton.classList.remove("selected");
             }
         },
         submitUserForm() {
@@ -252,49 +231,40 @@ new Vue({
                 return;
             }
         
-            fetch('/SignUpUser', {
+            // ИСПРАВЛЕНО: API_URL, credentials: 'include', и СТРОЧНЫЕ буквы в JSON!
+            fetch(`${API_URL}/SignUpUser`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', 
                 body: JSON.stringify({
-                    Login: login,
-                    Email: email,
-                    Nickname: authorNickname || '',
-                    VK: AuthorVk || '',
-                    Password: password,
+                    login: login,        // Было Login
+                    email: email,        // Было Email
+                    password: password,  // Было Password
+                    nickname: authorNickname || '',
+                    vk: AuthorVk || '',
                 }),                
             })
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
-                        if (text.includes('PasswordIsTooWeak')) {
-                            return this.showNotification('Пароль слишком слабый.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithEmailAndNoToken')) {
-                            return this.showNotification('Пользователь с таким email уже существует.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithEmailAndHasToken')) {
-                            return this.showNotification('На эту почту уже отправлена ссылка на подтверждение.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithLogin')) {
-                            return this.showNotification('Это имя пользователя уже занято.', 'error');
-                        } else if (text.includes('NicknameAlreadyExists')) {
+                        if (text.includes('password is too weak') || text.includes('WeakPassword')) {
+                            return this.showNotification('Пароль слишком слабый (мин. 8 символов, заглавная, строчная, цифра).', 'error');
+                        } else if (text.includes('user already exists') || text.includes('UserAlreadyExists')) {
+                            return this.showNotification('Пользователь с таким email или логином уже существует.', 'error');
+                        } else if (text.includes('nickname already exists')) {
                             return this.showNotification('Этот никнейм уже занят.', 'error');
-                        } else if (text.includes('AuthorVkAlreadyExists')) {
-                            return this.showNotification('Эта ссылка на VK уже занята.', 'error');
-                        } else if (text.includes('UserAlreadySignUp')) {
-                            return this.showNotification('Пользователь уже зарегистрирован на сайте.', 'error');
-                        } else if (text.includes('Badrequest')) {
-                            return this.showNotification('Ошибка базы данных. Попробуйте позже.', 'error');
-                        } else if (text.includes('InternalServerError')) {
-                            return this.showNotification('Ошибка сервера. Попробуйте позже.', 'error');
                         } else {
-                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
+                            return this.showNotification(`Ошибка: ${text}`, 'error');
                         }
                     });
                 } else {
                     this.showNotification('Подтвердите аккаунт в своем почтовом ящике!', 'success');
+                    this.closeUserModal();
                 }
             })
             .catch((error) => {
                 console.error('Ошибка:', error);
-                this.showNotification('Ошибка регистрации. Попробуйте еще раз.', 'error');
+                this.showNotification('Ошибка сети. Проверьте подключение.', 'error');
             });
         },
         closeUserModal(){
@@ -317,9 +287,11 @@ new Vue({
             const login = document.getElementById('auth-email-login-nickname').value;
             const password = document.getElementById('auth-password').value;
         
-            fetch('/LogIn', {
+            // ИСПРАВЛЕНО: API_URL и credentials: 'include'
+            fetch(`${API_URL}/LogIn`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     login: login,
                     password: password,
@@ -328,32 +300,24 @@ new Vue({
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
-                        if (text.includes('UserNotFound')) {
-                            return this.showNotification('Пользователь не найден.', 'error');
+                        if (text.includes('UserNotFound') || text.includes('InvalidCredentials')) {
+                            return this.showNotification('Неверный логин или пароль.', 'error');
                         } else if (text.includes('UserHasToken')) {
-                            return this.showNotification('Аккаунт на подтверждении.', 'error');
-                        } else if (text.includes('UserHasRecoveryToken')) {
-                            return this.showNotification('Аккаунт на восстановлении.', 'error');
+                            return this.showNotification('Аккаунт не подтвержден. Проверьте почту.', 'error');
                         } else if (text.includes('UserIsBanned')) {
                             return this.showNotification('Пользователь забанен.', 'error');
-                        } else if (text.includes('InvalidCredentials')) {
-                            return this.showNotification('Неверный пароль.', 'error');
-                        } else if (text.includes('InternalServerError')) {
-                            return this.showNotification('Ошибка сервера!', 'error');
-                        } else if (text.includes('Bad request')) {
-                            return this.showNotification('Плохое соединение!', 'error');
                         } else {
-                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
+                            return this.showNotification(`Ошибка: ${text}`, 'error');
                         }
                     });
                 } else {
                     this.showNotification('Вход выполнен успешно!', 'success');
-                    window.location.href = '/public/User.html';
+                    window.location.href = '/public/User.html'; // Или `${API_URL}/public/User.html`
                 }
             })
             .catch((error) => {
                 console.error('Ошибка:', error);
-                this.showNotification('Ошибка входа. Попробуйте еще раз.', 'error');
+                this.showNotification('Ошибка сети при входе.', 'error');
             });
         },
         closeLogInModal(){
@@ -364,9 +328,11 @@ new Vue({
         },
         submitRecoveryForm(){
             const email = document.getElementById('RecoveryEmail').value;
-            fetch('/Recovery', {
+            // ИСПРАВЛЕНО: API_URL и credentials: 'include'
+            fetch(`${API_URL}/Recovery`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     email: email,
                 }),
@@ -375,29 +341,19 @@ new Vue({
                 if (!response.ok) {
                     return response.text().then(text => {
                         if (text.includes('UserNotFound')) {
-                            return this.showNotification('Пользователь не найден.', 'error');
-                        } else if (text.includes('UserIsBanned')) {
-                            return this.showNotification('Пользователь забанен.', 'error');
-                        } else if (text.includes('UserHasToken')) {
-                            return this.showNotification('Аккаунт на подтверждении, проверьте почту.', 'error');
-                        } else if (text.includes('UserHasRecoveryToken')) {
-                            return this.showNotification('Аккаунт на восстановлении, проверьте почту.', 'error');
-                        } else if (text.includes('InternalServerError')) {
-                            return this.showNotification('Ошибка сервера!', 'error');
-                        } else if (text.includes('Bad request')) {
-                            return this.showNotification('Плохое соединение!', 'error');
+                            return this.showNotification('Пользователь с такой почтой не найден.', 'error');
                         } else {
-                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
+                            return this.showNotification(`Ошибка: ${text}`, 'error');
                         }
                     });
                 } else {
-                    this.showNotification('Письмо с ссылкой на восстановление пароля отправлено!.', 'success');
+                    this.showNotification('Письмо отправлено на почту!', 'success');
                     this.closeRecoveryModal();
                 }
             })
             .catch((error) => {
                 console.error('Ошибка:', error);
-                this.showNotification('Ошибка входа. Попробуйте еще раз.', 'error');
+                this.showNotification('Ошибка сети.', 'error');
             });
         },
         closeRecoveryModal(){
@@ -417,33 +373,25 @@ new Vue({
         isUserModalOpen(newValue) {
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
+                if (modal) modal.style.visibility = newValue ? 'visible' : 'hidden'; 
             });
         },
         isLogInModalOpen(newValue) {
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
+                if (modal) modal.style.visibility = newValue ? 'visible' : 'hidden'; 
             });
         },
         isRecoveryModalOpen(newValue) {
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal-recovery');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
+                if (modal) modal.style.visibility = newValue ? 'visible' : 'hidden'; 
             });
         },
         isAgreementModalOpen(newValue) {
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal-agreement');
-                if (modal) {
-                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
-                }
+                if (modal) modal.style.visibility = newValue ? 'visible' : 'hidden'; 
             });
         }
     }
