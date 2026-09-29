@@ -1,16 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menuToggle');
+    const dropdownMenuToggle = document.getElementById('DropdownMenu');
+    const dropdownMenu = document.getElementById('dropdownMenu');
 
     if (menuToggle && sidebar) {
         menuToggle.addEventListener('click', function(e) {
             e.stopPropagation();
             sidebar.classList.toggle('active');
         });
-
         document.addEventListener('click', function(event) {
             if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
                 sidebar.classList.remove('active');
+            }
+        });
+    }
+
+    // Логика выпадающего меню (если оно есть)
+    if (dropdownMenuToggle && dropdownMenu) {
+        dropdownMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function(event) {
+            if (!dropdownMenu.contains(event.target) && !dropdownMenuToggle.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
             }
         });
     }
@@ -69,6 +83,7 @@ new Vue({
         isPassword2Visible: false,
         isPasswordLoginVisible: false,
         isRecoveryModalOpen: false,
+        isAgreementModalOpen: false, // ✅ ДОБАВЛЕНО: чтобы не было ошибки Vue warn
         activeDocModal: null,
         isCookieBannerVisible: false,
     },
@@ -80,6 +95,21 @@ new Vue({
         }
     },
     methods: {
+        // ✅ ДОБАВЛЕНО: Методы для смены иконок при наведении (из твоего HTML)
+        hoverIcon(event) {
+            const img = event.target;
+            if (!img.dataset.originalSrc) {
+                img.dataset.originalSrc = img.src;
+            }
+            img.src = img.dataset.hover;
+        },
+        unhoverIcon(event) {
+            const img = event.target;
+            if (img.dataset.originalSrc) {
+                img.src = img.dataset.originalSrc;
+            }
+        },
+        
         closeSidebar() {
             const sidebar = document.getElementById('sidebar');
             if (sidebar) sidebar.classList.remove('active');
@@ -93,7 +123,9 @@ new Vue({
             .then(data => {
                 this.goods = data;
             })
-            .catch(() => {});
+            .catch((err) => {
+                console.error('Ошибка загрузки товаров:', err);
+            });
         },
         showNotification(message, type) {
             const container = document.getElementById('notifications');
@@ -114,8 +146,8 @@ new Vue({
         },
         handleMouseUp(event) {
             if (this.isMouseDownOnBackdrop && event.target === event.currentTarget) {
-                if (this.activeDocModal !== null) {
-                    this.closeDocModal();
+                if (this.isAgreementModalOpen) {
+                    this.closeAgreementModal();
                 } else if (this.isUserModalOpen) {
                     this.closeUserModal();
                 } else if (this.isLogInModalOpen) {
@@ -126,23 +158,18 @@ new Vue({
             }
             this.isMouseDownOnBackdrop = false;
         },
-        openDocModal(type) {
-            this.activeDocModal = type;
-            this.closeSidebar();
+        openAgreementModal() {
+            this.isAgreementModalOpen = true;
         },
-        closeDocModal() {
-            this.activeDocModal = null;
-        },
-        acceptCookies() {
-            localStorage.setItem('sofa_cookies_accepted', 'true');
-            this.isCookieBannerVisible = false;
+        closeAgreementModal() {
+            this.isAgreementModalOpen = false;
         },
         openUserModal() {  
             this.closeSidebar();
             this.isLogInModalOpen = false;
             this.isUserModalOpen = true;
         },
-        closeUserModal(){
+        closeUserModal() {
             this.isUserModalOpen = false;
         },
         selectUserType(type) {
@@ -166,14 +193,14 @@ new Vue({
             this.closeUserModal();
             this.isLogInModalOpen = true;
         },
-        closeLogInModal(){
+        closeLogInModal() {
             this.isLogInModalOpen = false;
         },
-        openRecoveryModal(){
+        openRecoveryModal() {
             this.closeLogInModal();
             this.isRecoveryModalOpen = true;
         },
-        closeRecoveryModal(){
+        closeRecoveryModal() {
             this.isRecoveryModalOpen = false;
         },
         submitUserForm() {
@@ -208,7 +235,7 @@ new Vue({
             })
             .then(response => {
                 if (!response.ok) {
-                    this.showNotification('Ошибка регистрации. Проверьте введенные данные (пароль: 8+ символов, заглавная, строчная, цифра).', 'error');
+                    this.showNotification('Ошибка регистрации. Проверьте введенные данные.', 'error');
                 } else {
                     this.showNotification('Письмо с подтверждением отправлено на почту!', 'success');
                     this.closeUserModal();
