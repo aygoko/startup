@@ -130,6 +130,7 @@ new Vue({
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.innerText = message;
+            notification.style.display = 'block';
             container.appendChild(notification);
 
             setTimeout(() => {
@@ -190,7 +191,6 @@ new Vue({
             this.closeUserModal();
             this.isLogInModalOpen = true;
             
-            // Очистка полей при открытии
             const signUpLogin = document.getElementById('user-login');
             const signUpEmail = document.getElementById('user-email');
             const signUpPassword = document.getElementById('user-password');
@@ -242,7 +242,7 @@ new Vue({
             })
             .then(response => {
                 if (!response.ok) {
-                    this.showNotification('Ошибка регистрации. Проверьте введенные данные.', 'error');
+                    this.showNotification('Ошибка регистрации. Проверьте введенные данные (пароль: 8+ символов, заглавная, строчная, цифра).', 'error');
                 } else {
                     this.showNotification('Письмо с подтверждением отправлено на почту!', 'success');
                     this.closeUserModal();
@@ -327,13 +327,12 @@ new Vue({
             });
         }
     },
-    // ✅ ДОБАВЛЕНО: Принудительное управление видимостью модалок через CSS
     watch: {
         isUserModalOpen(newValue) {
             this.$nextTick(() => {
-                const modal = document.querySelector('.modal'); // Простая модалка
+                const modal = document.querySelector('.modal');
                 if (modal) {
-                    modal.style.display = newValue ? 'flex' : 'none';
+                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
                 }
             });
         },
@@ -341,7 +340,7 @@ new Vue({
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal');
                 if (modal) {
-                    modal.style.display = newValue ? 'flex' : 'none';
+                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
                 }
             });
         },
@@ -349,7 +348,7 @@ new Vue({
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal-recovery');
                 if (modal) {
-                    modal.style.display = newValue ? 'flex' : 'none';
+                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
                 }
             });
         },
@@ -357,7 +356,7 @@ new Vue({
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal-agreement');
                 if (modal) {
-                    modal.style.display = newValue ? 'flex' : 'none';
+                    modal.style.setProperty('display', newValue ? 'flex' : 'none', 'important');
                 }
             });
         }

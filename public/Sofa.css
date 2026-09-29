@@ -93,7 +93,7 @@ header {
     border: 3px solid #9c131d;
     outline: none;
     box-shadow: none;
-    }
+}
 
 .sidebar {
     position: fixed;
@@ -199,7 +199,6 @@ button:hover {
     background-color: #fff;
     color: black;
     border: 2px solid #fff;
-    
 }
 
 .horiz-button-menu button:hover {
@@ -222,33 +221,35 @@ footer {
     font-size: large;
 }
 
-.modal-recovery, .modal-agreement, .modal{
+/* ✅ ИСПРАВЛЕНО: убрано visibility: hidden, display: none вместо flex */
+.modal-recovery, .modal-agreement, .modal {
     background-color: rgba(0, 0, 0, 0.4);
     height: 100%;
     left: 0;
     position: fixed;
     top: 0;
     width: 100%;
-    display: flex;
+    display: none; /* Было flex — меняем на none. JS будет ставить flex */
     justify-content: center;
     align-items: center;
-    visibility: hidden;
-}
-.modal{
-    z-index:7;
+    /* visibility: hidden — УДАЛЕНО, это был главный враг */
 }
 
-.modal-recovery{
-    z-index:8;
+.modal {
+    z-index: 7;
 }
 
-.modal-agreement{
+.modal-recovery {
+    z-index: 8;
+}
+
+.modal-agreement {
     z-index: 8;
 }
 
 .modal-content {
-    display: flex; /*попытка выравнивания */
-    flex-direction: column; /*попытка выравнивания */
+    display: flex;
+    flex-direction: column;
     height: fit-content;
     background-color: #fff;
     color: #000000;
@@ -271,7 +272,7 @@ footer {
 
 .password-container input {
     width: 100%;
-    padding-right: 40px; /* Отступ для ссылки */
+    padding-right: 40px;
 }
 
 form {
@@ -300,7 +301,7 @@ form {
     font-size: 27px;
 }
 
-.modal-content p{
+.modal-content p {
     text-align: center;
 }
 
@@ -308,7 +309,6 @@ form {
     margin-top: 7px;
 }
 
-/* Рамочки для кнопок ввода данных при регистрации */
 .modal-content input {
     padding: 12px 15px;
     margin-top: 5px;
@@ -317,14 +317,12 @@ form {
     font-size: 16px;
 }
 
-/* Фокус на рамках */
 .modal-content input:focus {
     border-color: #9c131d;
     outline: none;
     box-shadow: 0 0 0 1px #9c131d;
 }
 
-/* Выбранная рамка */
 .modal-content input:hover {
     border-color: #9c131d;
     outline: none;
@@ -332,11 +330,10 @@ form {
     transition: 0.2s;
 }
 
-.modal-content .button-container{
+.modal-content .button-container {
     display: flex;
 }
 
-/* Рамка на Мерчедел/Покупатель/Зарегистрироваться */
 .modal-content button {
     margin: 10px auto 0 auto;
     padding: 12px 20px;
@@ -370,72 +367,72 @@ form {
 }
 
 .modal-content label {
-  color: #1F2937; 
-  font-size: 16px;
-  display: block;
+    color: #1F2937;
+    font-size: 16px;
+    display: block;
 }
 
 .modal-content .button-container + label {
-  color: #1F2937;
+    color: #1F2937;
 }
 
 .modal-content input[type="checkbox"] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  padding: 0 !important;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border: 2,5px solid #9c131d;
-  border-radius: 6px;
-  outline: none;
-  cursor: pointer;
-  position: relative;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  margin-right: 10px;
-  vertical-align: middle;
-  flex-shrink: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 0 !important;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border: 2.5px solid #9c131d;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-right: 10px;
+    vertical-align: middle;
+    flex-shrink: 0;
 }
 
 input[type="checkbox"]:hover {
-  border-color: #9c131d;
-  box-shadow: 0 0 0 1px #9c131d;
+    border-color: #9c131d;
+    box-shadow: 0 0 0 1px #9c131d;
 }
 
 input[type="checkbox"] {
-  border-color: #949AA6;
-  box-shadow: none;
+    border-color: #949AA6;
+    box-shadow: none;
 }
 
 input[type="checkbox"]:checked {
-  background-color: #9c131d;
-  border-color: #9c131d;
+    background-color: #9c131d;
+    border-color: #9c131d;
 }
 
 input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 3px;
-  width: 6px;
-  height: 12px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
 }
 
 .checkbox-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 15px 0;
-  text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+    text-align: center;
 }
 
 .checkbox-container p {
-  margin: 0;
-  color: #1F2937;
-  align-items: center;
+    margin: 0;
+    color: #1F2937;
+    align-items: center;
 }
 
 .eye-link {
@@ -448,14 +445,14 @@ input[type="checkbox"]:checked::after {
 }
 
 .PerDataLink {
-  color: #9c131d;
-  transition: all 0.3s ease;
-  border-bottom: 1px dashed #9c131d;
+    color: #9c131d;
+    transition: all 0.3s ease;
+    border-bottom: 1px dashed #9c131d;
 }
 
 .PerDataLink:hover {
-  color: #d32f2f;
-  border-bottom-color: transparent;
+    color: #d32f2f;
+    border-bottom-color: transparent;
 }
 
 .symbols-container {
@@ -479,12 +476,11 @@ input[type="checkbox"]:checked::after {
     z-index: 6;
 }
 
-
 .card {
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 16px;
-    width: 200px; /* Ширина карточки */
+    width: 200px;
     text-align: center;
     transition: background-color 0.3s, border-color 0.3s;
 }
@@ -583,7 +579,7 @@ input[type="checkbox"]:checked::after {
     margin-bottom: 10px;
 }
 
-.dropdown-button{
+.dropdown-button {
     background-color: #9c131d;
     border: 2px solid #9c131d;
     border-radius: 8px;
@@ -607,9 +603,8 @@ input[type="checkbox"]:checked::after {
     content: url("assets/menu-red.png");
 }
 
-
 @media screen and (max-width: 860px) {
-    header{
+    header {
         padding: 0px 5px;
         justify-content: center;
     }
@@ -628,32 +623,32 @@ input[type="checkbox"]:checked::after {
         display: block;
     }
 
-    .header-content{
+    .header-content {
         display: contents;
     }
 
     .buttons {
-        display: none !important; 
+        display: none !important;
     }
 
-    .dropdown{
-        display: none !important; 
+    .dropdown {
+        display: none !important;
     }
 
     #searchInput {
         flex-grow: 1;
     }
 
-    nav{
+    nav {
         display: grid;
     }
 
     .main-elements {
         height: 20vh;
     }
-    
+
     .main-big-text {
-        padding-top:10px ;
+        padding-top: 10px;
         font-size: 28px;
     }
 
@@ -667,7 +662,7 @@ input[type="checkbox"]:checked::after {
         margin-right: 5px;
         background-color: #fff;
         color: black;
-        border: 2px solid #fff;   
+        border: 2px solid #fff;
     }
 }
 
@@ -693,7 +688,7 @@ input[type="checkbox"]:checked::after {
     border-radius: 5px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 999; /* Убедитесь, что чат выше других элементов */
+    z-index: 999;
 }
 
 .chatbot-header {
@@ -734,7 +729,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .dropdown-content {
-    text-align:start;
+    text-align: start;
     display: none;
     position: absolute;
     background-color: #ffffff;
@@ -754,8 +749,7 @@ input[type="checkbox"]:checked::after {
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-    /* overflow: hidden; */
-    margin: 10 10px;
+    margin: 10px;
     border-radius: 8px;
     border: 2px solid transparent;
 }
@@ -764,13 +758,11 @@ input[type="checkbox"]:checked::after {
     background-color: #9c131d;
     color: white;
     border: 2px solid #9c131d;
-    border-color: #9c131d;
-    /* transition: all 0.3s ease; */
 }
 
 .dropdown-content .highlighted {
     background-color: #9c131d;
-    border-radius:8px;
+    border-radius: 8px;
     color: white;
     margin: 0 8px;
     border: 2px solid #9c131d;
@@ -781,37 +773,38 @@ input[type="checkbox"]:checked::after {
 }
 
 .attributions {
-  font-size: 12px;
-  color: #777;
-  margin-bottom: 10px;
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 10px;
 }
+
 .attributions a {
-  color: #9c131d;
-  text-decoration: none;
+    color: #9c131d;
+    text-decoration: none;
 }
 
 .input-with-icon {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-  transition: border-color 0.3s;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    transition: border-color 0.3s;
 }
 
 .input-icon {
-  position: absolute;
-  left: 10px;
-  top: 55%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
+    position: absolute;
+    left: 10px;
+    top: 55%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
 }
 
 .input-with-icon input {
-  width: 100%;
-  padding: 10px 15px 10px 40px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    box-sizing: border-box;
 }
 
 .input-with-icon .input-icon {
@@ -823,65 +816,64 @@ input[type="checkbox"]:checked::after {
 }
 
 input {
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  width: 100%;
-  transition: all 0.3s;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100%;
+    transition: all 0.3s;
 }
 
-/* Плейсхолдеры */
 input::placeholder {
-  color: #999;
-  font-size: 14px;
+    color: #999;
+    font-size: 14px;
 }
 
 input:focus {
-  border-color: #9c131d;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(156, 19, 29, 0.2);
+    border-color: #9c131d;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(156, 19, 29, 0.2);
 }
 
 .button-container {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .modal-header h2 {
-  margin: 0;
-  padding: 0 30px;
+    margin: 0;
+    padding: 0 30px;
 }
 
 .modal-content h2 {
-  font-size: 35px !important;
-  text-align: center;
-  margin: 0;
-  padding: 0 40px;
-  line-height: 1.2;
+    font-size: 35px !important;
+    text-align: center;
+    margin: 0;
+    padding: 0 40px;
+    line-height: 1.2;
 }
 
 .button-container button {
-  width: 170px;
+    width: 170px;
 }
 
 .input-with-icon:hover .icon-stylus {
-  content: url("assets/stylus-red.png");
+    content: url("assets/stylus-red.png");
 }
 
 .input-with-icon:hover .icon-vk {
-  content: url("assets/vk-red.png");
+    content: url("assets/vk-red.png");
 }
 
 .input-with-icon:hover .icon-login {
-  content: url("assets/login-red.png");
+    content: url("assets/login-red.png");
 }
 
 .input-with-icon:hover .icon-email {
-  content: url("assets/email-red.png");
+    content: url("assets/email-red.png");
 }
 
 .input-with-icon:hover .icon-password {
-  content: url("assets/password-red.png");
+    content: url("assets/password-red.png");
 }
 
 .password-container:hover .icon-password {
@@ -893,49 +885,49 @@ input:focus {
 }
 
 .form-input-container {
-  width: 100%;
-  max-width: 500px;
-  margin-bottom: 8px;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 8px;
 }
 
 .form-input-container .input-icon {
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #LogInForm {
-  display: grid;
-  grid-row-gap: 10px;
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
+    display: grid;
+    grid-row-gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 #LogInForm .input-with-icon {
-  position: relative;
-  width: 100%;
+    position: relative;
+    width: 100%;
 }
 
 #LogInForm .password-container {
-  position: relative;
-  display: flex;
-  align-items: center;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 #LogInForm input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #949AA6;
-  border-radius: 8px;
-  font-size: 16px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #949AA6;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
 }
 
 #LogInForm input:focus {
-  border-color: #9c131d;
-  outline: none;
-  box-shadow: 0 0 0 1px #9c131d;
+    border-color: #9c131d;
+    outline: none;
+    box-shadow: 0 0 0 1px #9c131d;
 }
 
 #LogInForm input:hover {
@@ -946,22 +938,15 @@ input:focus {
 }
 
 #LogInForm button {
-  width: 50%;
-  padding: 12px 20px;
-  margin-top: 25px;
+    width: 50%;
+    padding: 12px 20px;
+    margin-top: 25px;
 }
 
 #LogInForm a {
     text-decoration: none;
     color: #818181;
     margin: 15px;
-}
-
-#LogInForm a body {
-    margin: 0;
-    font-family: 'Montserrat-Medium', sans-serif;
-    background-color: #ffffff;
-    color: black;
 }
 
 #LogInForm .input-with-icon input,
@@ -982,86 +967,85 @@ input:focus {
     width: 100%;
 }
 
-/* Шрифт */
 @font-face {
-  font-family: 'Montserrat-SemiBold';
-  src: url('fonts/Montserrat/Montserrat-SemiBold.ttf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'Montserrat-SemiBold';
+    src: url('fonts/Montserrat/Montserrat-SemiBold.ttf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @font-face {
-  font-family: 'Montserrat-Regular';
-  src: url('fonts/Montserrat/Montserrat-Regular.ttf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'Montserrat-Regular';
+    src: url('fonts/Montserrat/Montserrat-Regular.ttf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @font-face {
-  font-family: 'Montserrat-Medium';
-  src: url('fonts/Montserrat/Montserrat-Medium.ttf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'Montserrat-Medium';
+    src: url('fonts/Montserrat/Montserrat-Medium.ttf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
 }
- 
+
 #description {
-  display: flex;
-  align-items: center; 
-  gap: 40px; 
-  padding: 110px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 110px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 #description .text-block,
 #description .image-block {
-  flex: 1;
+    flex: 1;
 }
 
 #description .text-block {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #description .collage-image {
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  object-fit: cover;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    object-fit: cover;
 }
 
 #description .main-title {
-  font-family: 'Montserrat-SemiBold', sans-serif;
-  font-size: 3.5em;
-  font-weight: bold;
-  margin-bottom: 20px;
-  letter-spacing: 0.5px;
+    font-family: 'Montserrat-SemiBold', sans-serif;
+    font-size: 3.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
 }
 
 #description .subtitle {
-  font-family: 'Montserrat-Medium', sans-serif;
-  font-size: 1.6em;
-  margin-bottom: 30px;
-  color: #333333;
-  line-height: 1.4;
+    font-family: 'Montserrat-Medium', sans-serif;
+    font-size: 1.6em;
+    margin-bottom: 30px;
+    color: #333333;
+    line-height: 1.4;
 }
 
 #description .order-button {
-  padding: 15px 45px;
-  background: #9c131d;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.3em;
-  cursor: pointer;
-  transition: 0.1s;
-  width: fit-content;
+    padding: 15px 45px;
+    background: #9c131d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.3em;
+    cursor: pointer;
+    transition: 0.1s;
+    width: fit-content;
 }
 
 #description .order-button:hover {
-  background: #7a0f16;
-  transform: translateY(-2px);
+    background: #7a0f16;
+    transform: translateY(-2px);
 }
 
 .circulation-cards {
@@ -1089,8 +1073,6 @@ input:focus {
 }
 
 .circulation-image-container {
-    /* max-width: 100%;
-    max-height: 100%; */
     position: relative;
     height: 210px;
     width: 100%;
