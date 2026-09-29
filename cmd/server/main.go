@@ -15,7 +15,6 @@ import (
 	"github.com/avelgar/sofa/internal/repository/postgres"
 	"github.com/avelgar/sofa/internal/service"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	_ "github.com/lib/pq"
 )
@@ -78,17 +77,6 @@ func main() {
 			})
 		},
 	})
-
-	// ========================================================================
-	// 🔥 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Настройка CORS для фронтенда на S3
-	// Должно быть ДО всех остальных middleware и роутов!
-	// ========================================================================
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://landing.merchotsofy.ru, https://landing.merchotsofy.ru, http://localhost:8080",
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-		AllowCredentials: true, // ОБЯЗАТЕЛЬНО для работы сессий и cookies!
-	}))
 
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "application/json; charset=utf-8")
