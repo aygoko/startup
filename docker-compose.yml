@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sofa_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # Можно убрать, если не нужен доступ к БД снаружи
+    networks:
+      - sofa_network
+
+  app:
+    build: .
+    container_name: sofa_app
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - sofa_network
+
+volumes:
+  postgres_data:
+
+networks:
+  sofa_network:
+    driver: bridge

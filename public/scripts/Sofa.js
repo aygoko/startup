@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Перехватчик ошибок промисов
     window.addEventListener('unhandledrejection', function(event) {
-        console.warn('⚠️ Перехвачена ошибка промиса:', event.reason);
+        console.warn('⚠️ Перехвачена ошибка промиса:',
+             event.reason);
         event.preventDefault();
     });
 
