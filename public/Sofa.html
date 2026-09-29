@@ -32,7 +32,7 @@
 
                     <div style="position: relative;display: flex;margin: 10px;">
                         <img src="assets/search.png" alt="Поиск" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px;">
-                        <input type="text" id="searchInput" placeholder="Поиск..." style="padding-left: 30px;height: 20px;margin: auto;/* display: flex; *//* flex-grow: 1; */">
+                        <input type="text" id="searchInput" placeholder="Поиск..." style="padding-left: 30px;height: 20px;margin: auto;">
                     </div>
 
                 <div class="dropdown" style="position: relative;margin: auto;">
@@ -70,7 +70,6 @@
             <a @click.prevent="openUserModal">Доставка</a>
         </nav>
     </aside>
-    <div id="notifications" class="notifications"></div>
     
     <!-- Основная часть -->
     <main>
@@ -155,7 +154,7 @@
         </div>        
 
         <!-- Регистрация -->
-        <div v-if="isUserModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+        <div id="modalRegister" class="modal" style="display: none;" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
             <div class="modal-content" @click.stop>
                 <div class="modal-header">
                     <span class="close" @click="closeUserModal">&times;</span>
@@ -167,7 +166,6 @@
                 </div>
                 <form id="UserForm" @submit.prevent="submitUserForm">
                     <div style="display: grid;">
-                        <!-- Общие поля для всех пользователей -->
                         <label for="login">Логин</label>
                         <div class="input-with-icon">
                             <img 
@@ -179,7 +177,6 @@
                             <input type="text" id="user-login" required>
                         </div>
 
-                        <!-- Почта -->
                         <label for="email">Электронная почта</label>
                         <div class="input-with-icon">
                             <img 
@@ -191,7 +188,6 @@
                             <input type="email" id="user-email" required>
                         </div>
 
-                        <!-- Пароль -->
                         <label for="password">Пароль</label>
                         <div class="input-with-icon password-container">
                             <img 
@@ -211,7 +207,6 @@
                             </a>
                         </div>
 
-                        <!-- Проверка пароля -->
                         <label for="password-repeat">Подтвердите пароль</label>
                         <div class="input-with-icon password-container">
                             <img src="assets/password-gray.png" 
@@ -228,9 +223,7 @@
                             </a>
                         </div>
 
-                        <!-- Мерчедел -->
                         <div v-if="userType === 'merchant'">
-                            <!-- Ник автора -->
                             <label for="nickname">Ник автора</label>        
                             <div class="input-with-icon">
                                 <img src="assets/stylus-gray.png" 
@@ -241,7 +234,6 @@
                                 <input type="text" id="author-nickname" required>
                             </div>
                             
-                            <!-- Ссылка на ВК -->
                             <label for="vk-link">Ссылка на личную страницу ВК</label>
                             <div class="input-with-icon">
                                 <img src="assets/vk-gray.png" 
@@ -253,7 +245,6 @@
                             </div>
                         </div>
 
-                        <!-- Согласие на обработку данных -->
                         <div style="display: flex; align-items: baseline; gap: 8px; margin: 15px 0; margin-left: auto; margin-right: auto; flex-wrap: wrap; align-content: unset;">
                             <input type="checkbox" 
                                     id="agreement-checkbox"
@@ -277,8 +268,8 @@
             </div>
         </div>
         
-        <!-- Вход? -->
-        <div v-if="isLogInModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+        <!-- Вход -->
+        <div id="modalLogin" class="modal" style="display: none;" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeLogInModal">&times;</span>
                 <h2>Войти</h2>
@@ -304,7 +295,7 @@
                         <input :type="isPasswordLoginVisible ? 'text' : 'password'" id="auth-password" required>
                         <a href="#" @click.prevent="togglePasswordLoginVisibility" class="eye-link">
                              <img 
-                                :src="isPasswordVisible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" 
+                                :src="isPasswordLoginVisible ? 'assets/yin-yang-red.png' : 'assets/yin-yang-gray.png'" 
                                 style="height: 20px; width: 20px;">
                         </a>
                     </div>
@@ -316,7 +307,7 @@
         </div>
 
         
-        <div v-if="isRecoveryModalOpen" class="modal-recovery"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+        <div id="modalRecovery" class="modal-recovery" style="display: none;" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeRecoveryModal">&times;</span>
                 <h2>Восстановление пароля</h2>
@@ -337,14 +328,13 @@
         </div>
 
         
-        <div v-if="isAgreementModalOpen" class="modal-agreement" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+        <div id="modalAgreement" class="modal-agreement" style="display: none;" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeAgreementModal">&times;</span>
 
                 <h2 style="text-align: center; margin-bottom: 1.5em;">Согласие на обработку персональных данных</h2>
                 <div style="text-indent: 2em; max-height: 60vh; overflow-y: auto; padding-right: 10px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333;">
 
-                <!-- 1. Общие положения -->
                 <section style="background: #f9f9f9; border-left: 4px solid #9c131d; padding: 15px 20px; margin-bottom: 20px; border-radius: 0 8px 8px 0;">
                     <h3 style="color: #9c131d; margin-top: 0;">1. Общие положения</h3>
                     <p>
@@ -357,7 +347,6 @@
                     </ul>
                 </section>
 
-                <!-- 2. Состав обрабатываемых данных -->
                 <section style="margin-bottom: 20px;">
                     <h3 style="color: #9c131d; margin-top: 0;">2. Состав обрабатываемых данных</h3>
                     <p><strong>Для всех пользователей:</strong></p>
@@ -380,7 +369,6 @@
                     </ul>
                 </section>
 
-                <!-- 3. Цели обработки данных -->
                 <section style="margin-bottom: 20px;">
                     <h3 style="color: #9c131d; margin-top: 0;">3. Цели обработки персональных данных</h3>
                     <ul>
@@ -393,7 +381,6 @@
                     </ul>
                 </section>
 
-                <!-- 4. Способы обработки данных -->
                 <section style="margin-bottom: 20px;">
                     <h3 style="color: #9c131d; margin-top: 0;">4. Способы обработки персональных данных</h3>
                     <ul>
@@ -404,7 +391,6 @@
                     </ul>
                 </section>
 
-                <!-- 5. Сроки хранения данных -->
                 <section style="margin-bottom: 20px;">
                     <h3 style="color: #9c131d; margin-top: 0;">5. Сроки хранения персональных данных</h3>
                     <ul>
@@ -414,7 +400,6 @@
                     </ul>
                 </section>
 
-                <!-- 6. Права субъекта данных -->
                 <section style="margin-bottom: 20px;">
                     <h3 style="color: #9c131d; margin-top: 0;">6. Права субъекта персональных данных</h3>
                     <p>Я подтверждаю, что ознакомлен(а) со следующими правами:</p>
@@ -432,7 +417,6 @@
                     </ul>
                 </section>
 
-                <!-- 7. Заключительные положения -->
                 <section>
                     <h3 style="color: #9c131d; margin-top: 0;">7. Заключительные положения</h3>
                     <ul>

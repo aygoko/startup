@@ -156,41 +156,29 @@ new Vue({
             }
             this.isMouseDownOnBackdrop = false;
         },
-        openAgreementModal() {
-            this.isAgreementModalOpen = true;
-        },
-        closeAgreementModal() {
-            this.isAgreementModalOpen = false;
-        },
+        
+        // === УПРАВЛЕНИЕ МОДАЛКАМИ ЧЕРЕЗ ПРЯМОЕ ОБРАЩЕНИЕ К DOM ===
         openUserModal() {  
             this.closeSidebar();
-            this.isLogInModalOpen = false;
+            this.closeLogInModal();
             this.isUserModalOpen = true;
+            const modal = document.getElementById('modalRegister');
+            if (modal) modal.style.display = 'flex';
         },
         closeUserModal() {
             this.isUserModalOpen = false;
+            const modal = document.getElementById('modalRegister');
+            if (modal) modal.style.display = 'none';
         },
-        selectUserType(type) {
-            this.userType = type;
-            const merchantButton = document.getElementById("merchantButton");
-            const buyerButton = document.getElementById("buyerButton");
-            if (type === 'buyer') {
-                if (buyerButton) buyerButton.classList.add("selected");
-                if (merchantButton) merchantButton.classList.remove("selected");
-            } else {
-                if (merchantButton) merchantButton.classList.add("selected");
-                if (buyerButton) buyerButton.classList.remove("selected");
-            }
-        },
-        togglePasswordVisibility() { this.isPasswordVisible = !this.isPasswordVisible; },
-        togglePassword2Visibility() { this.isPassword2Visible = !this.isPassword2Visible; },
-        togglePasswordLoginVisibility() { this.isPasswordLoginVisible = !this.isPasswordLoginVisible; },
         
         openLogInModal() {
             this.closeSidebar();
             this.closeUserModal();
             this.isLogInModalOpen = true;
+            const modal = document.getElementById('modalLogin');
+            if (modal) modal.style.display = 'flex';
             
+            // Очистка полей
             const signUpLogin = document.getElementById('user-login');
             const signUpEmail = document.getElementById('user-email');
             const signUpPassword = document.getElementById('user-password');
@@ -202,14 +190,52 @@ new Vue({
         },
         closeLogInModal() {
             this.isLogInModalOpen = false;
+            const modal = document.getElementById('modalLogin');
+            if (modal) modal.style.display = 'none';
         },
+        
         openRecoveryModal() {
             this.closeLogInModal();
             this.isRecoveryModalOpen = true;
+            const modal = document.getElementById('modalRecovery');
+            if (modal) modal.style.display = 'flex';
         },
         closeRecoveryModal() {
             this.isRecoveryModalOpen = false;
+            const modal = document.getElementById('modalRecovery');
+            if (modal) modal.style.display = 'none';
         },
+        
+        openAgreementModal() {
+            this.isAgreementModalOpen = true;
+            const modal = document.getElementById('modalAgreement');
+            if (modal) modal.style.display = 'flex';
+        },
+        closeAgreementModal() {
+            this.isAgreementModalOpen = false;
+            const modal = document.getElementById('modalAgreement');
+            if (modal) modal.style.display = 'none';
+        },
+        
+        selectUserType(type) {
+            this.userType = type;
+            const merchantButton = document.getElementById("merchantButton");
+            const buyerButton = document.getElementById("buyerButton");
+            if (type === 'buyer') {
+                if (buyerButton) {
+                    buyerButton.classList.add("selected");
+                    buyerButton.classList.remove("");
+                }
+                if (merchantButton) merchantButton.classList.remove("selected");
+            } else {
+                if (merchantButton) merchantButton.classList.add("selected");
+                if (buyerButton) buyerButton.classList.remove("selected");
+            }
+        },
+        togglePasswordVisibility() { this.isPasswordVisible = !this.isPasswordVisible; },
+        togglePassword2Visibility() { this.isPassword2Visible = !this.isPassword2Visible; },
+        togglePasswordLoginVisibility() { this.isPasswordLoginVisible = !this.isPasswordLoginVisible; },
+        
         submitUserForm() {
             const login = document.getElementById('user-login').value;
             const email = document.getElementById('user-email').value;
@@ -326,6 +352,5 @@ new Vue({
                 updateSlider();
             });
         }
-    },
-    
+    }
 });
