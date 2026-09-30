@@ -228,11 +228,11 @@ new Vue({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    Login: login,
-                    Email: email,
-                    Nickname: authorNickname || '',
-                    VK: AuthorVk || '',
-                    Password: password,
+                    login: login,
+                    email: email,
+                    nickname: authorNickname || '',
+                    vk: AuthorVk || '',
+                    password: password,
                 }),                
             })
             .then(response => {
