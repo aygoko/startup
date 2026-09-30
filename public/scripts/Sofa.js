@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menuToggle');
-    const dropdownMenuToggle = document.getElementById('DropdownMenu');
-    const dropdownMenu = document.getElementById('dropdownMenu');
 
+    // Мобильный гамбургер
     if (menuToggle && sidebar) {
         menuToggle.addEventListener('click', function(e) {
             e.stopPropagation();
             sidebar.classList.toggle('active');
         });
+
         document.addEventListener('click', function(event) {
             if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
                 sidebar.classList.remove('active');
@@ -16,18 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (dropdownMenuToggle && dropdownMenu) {
-        dropdownMenuToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', function(event) {
-            if (!dropdownMenu.contains(event.target) && !dropdownMenuToggle.contains(event.target)) {
-                dropdownMenu.style.display = 'none';
-            }
-        });
-    }
-
+    // Глобальный перехватчик ошибок
     window.addEventListener('error', function(event) {
         console.warn('⚠️ Глобальная ошибка:', event.error);
     });
@@ -37,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
     });
 
+    // Обработка токена регистрации из URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
@@ -44,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/api/checkToken', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: 'include',
             body: JSON.stringify({ token: token })
         })
         .then(res => res.json())
@@ -69,10 +58,34 @@ new Vue({
     data: {
         goods: [],
         circulationItems: [
-            { image: "assets/картхолдер.png", name: "Картхолдеры", stock: 45, oldPrice: 150, newPrice: 120 },
-            { image: "assets/наклейки.png", name: "Объёмные наклейки", stock: 32, oldPrice: 80, newPrice: 64 },
-            { image: "assets/стенд.png", name: "Стенды с блёстками", stock: 32, oldPrice: 80, newPrice: 64 },
-            { image: "assets/биндер.png", name: "Биндеры", stock: 32, oldPrice: 80, newPrice: 64 },
+            {
+                image: "assets/картхолдер.png",
+                name: "Картхолдеры",
+                stock: 45,
+                oldPrice: 150,
+                newPrice: 120,
+            },
+            {
+                image: "assets/наклейки.png",
+                name: "Объёмные наклейки",
+                stock: 32,
+                oldPrice: 80,
+                newPrice: 64,
+            },
+            {
+                image: "assets/стенд.png",
+                name: "Стенды с блёстками",
+                stock: 32,
+                oldPrice: 80,
+                newPrice: 64,
+            },
+            {
+                image: "assets/биндер.png",
+                name: "Биндеры",
+                stock: 32,
+                oldPrice: 80,
+                newPrice: 64,
+            },
         ],
         isMouseDownOnBackdrop: false,
         isUserModalOpen: false,
@@ -82,31 +95,21 @@ new Vue({
         isPassword2Visible: false,
         isPasswordLoginVisible: false,
         isRecoveryModalOpen: false,
-        isAgreementModalOpen: false,
-        activeDocModal: null,
+        
+        // Модальное окно правовых документов ИП и Cookie
+        activeDocModal: null, // null | 'privacy' | 'terms' | 'cookies'
         isCookieBannerVisible: false,
     },
     mounted() {
         this.fetchGoods();
         this.initSlider();
+
+        // Проверяем согласие на Cookies в localStorage
         if (!localStorage.getItem('sofa_cookies_accepted')) {
             this.isCookieBannerVisible = true;
         }
     },
     methods: {
-        hoverIcon(event) {
-            const img = event.target;
-            if (!img.dataset.originalSrc) {
-                img.dataset.originalSrc = img.src;
-            }
-            img.src = img.dataset.hover;
-        },
-        unhoverIcon(event) {
-            const img = event.target;
-            if (img.dataset.originalSrc) {
-                img.src = img.dataset.originalSrc;
-            }
-        },
         closeSidebar() {
             const sidebar = document.getElementById('sidebar');
             if (sidebar) sidebar.classList.remove('active');
@@ -120,9 +123,7 @@ new Vue({
             .then(data => {
                 this.goods = data;
             })
-            .catch((err) => {
-                console.error('Ошибка загрузки товаров:', err);
-            });
+            .catch(() => {});
         },
         showNotification(message, type) {
             const container = document.getElementById('notifications');
@@ -130,7 +131,6 @@ new Vue({
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.innerText = message;
-            notification.style.display = 'block';
             container.appendChild(notification);
 
             setTimeout(() => {
@@ -144,8 +144,8 @@ new Vue({
         },
         handleMouseUp(event) {
             if (this.isMouseDownOnBackdrop && event.target === event.currentTarget) {
-                if (this.isAgreementModalOpen) {
-                    this.closeAgreementModal();
+                if (this.activeDocModal !== null) {
+                    this.closeDocModal();
                 } else if (this.isUserModalOpen) {
                     this.closeUserModal();
                 } else if (this.isLogInModalOpen) {
@@ -156,76 +156,31 @@ new Vue({
             }
             this.isMouseDownOnBackdrop = false;
         },
-        
-        // === УПРАВЛЕНИЕ МОДАЛКАМИ ЧЕРЕЗ ПРЯМОЕ ОБРАЩЕНИЕ К DOM ===
+        openDocModal(type) {
+            this.activeDocModal = type;
+            this.closeSidebar();
+        },
+        closeDocModal() {
+            this.activeDocModal = null;
+        },
+        acceptCookies() {
+            localStorage.setItem('sofa_cookies_accepted', 'true');
+            this.isCookieBannerVisible = false;
+        },
         openUserModal() {  
             this.closeSidebar();
-            this.closeLogInModal();
-            this.isUserModalOpen = true;
-            const modal = document.getElementById('modalRegister');
-            if (modal) modal.style.display = 'flex';
-        },
-        closeUserModal() {
-            this.isUserModalOpen = false;
-            const modal = document.getElementById('modalRegister');
-            if (modal) modal.style.display = 'none';
-        },
-        
-        openLogInModal() {
-            this.closeSidebar();
-            this.closeUserModal();
-            this.isLogInModalOpen = true;
-            const modal = document.getElementById('modalLogin');
-            if (modal) modal.style.display = 'flex';
-            
-            // Очистка полей
-            const signUpLogin = document.getElementById('user-login');
-            const signUpEmail = document.getElementById('user-email');
-            const signUpPassword = document.getElementById('user-password');
-            const signUpPassword2 = document.getElementById('user-password-repeat');
-            if (signUpLogin) signUpLogin.value = '';
-            if (signUpEmail) signUpEmail.value = '';
-            if (signUpPassword) signUpPassword.value = '';
-            if (signUpPassword2) signUpPassword2.value = '';
-        },
-        closeLogInModal() {
             this.isLogInModalOpen = false;
-            const modal = document.getElementById('modalLogin');
-            if (modal) modal.style.display = 'none';
+            this.isUserModalOpen = true;
         },
-        
-        openRecoveryModal() {
-            this.closeLogInModal();
-            this.isRecoveryModalOpen = true;
-            const modal = document.getElementById('modalRecovery');
-            if (modal) modal.style.display = 'flex';
+        closeUserModal(){
+            this.isUserModalOpen = false;
         },
-        closeRecoveryModal() {
-            this.isRecoveryModalOpen = false;
-            const modal = document.getElementById('modalRecovery');
-            if (modal) modal.style.display = 'none';
-        },
-        
-        openAgreementModal() {
-            this.isAgreementModalOpen = true;
-            const modal = document.getElementById('modalAgreement');
-            if (modal) modal.style.display = 'flex';
-        },
-        closeAgreementModal() {
-            this.isAgreementModalOpen = false;
-            const modal = document.getElementById('modalAgreement');
-            if (modal) modal.style.display = 'none';
-        },
-        
         selectUserType(type) {
             this.userType = type;
             const merchantButton = document.getElementById("merchantButton");
             const buyerButton = document.getElementById("buyerButton");
             if (type === 'buyer') {
-                if (buyerButton) {
-                    buyerButton.classList.add("selected");
-                    buyerButton.classList.remove("");
-                }
+                if (buyerButton) buyerButton.classList.add("selected");
                 if (merchantButton) merchantButton.classList.remove("selected");
             } else {
                 if (merchantButton) merchantButton.classList.add("selected");
@@ -236,6 +191,21 @@ new Vue({
         togglePassword2Visibility() { this.isPassword2Visible = !this.isPassword2Visible; },
         togglePasswordLoginVisibility() { this.isPasswordLoginVisible = !this.isPasswordLoginVisible; },
         
+        openLogInModal() {
+            this.closeSidebar();
+            this.closeUserModal();
+            this.isLogInModalOpen = true;
+        },
+        closeLogInModal(){
+            this.isLogInModalOpen = false;
+        },
+        openRecoveryModal(){
+            this.closeLogInModal();
+            this.isRecoveryModalOpen = true;
+        },
+        closeRecoveryModal(){
+            this.isRecoveryModalOpen = false;
+        },
         submitUserForm() {
             const login = document.getElementById('user-login').value;
             const email = document.getElementById('user-email').value;
@@ -257,18 +227,17 @@ new Vue({
             fetch('/SignUpUser', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({
-                    login: login,
-                    email: email,
-                    password: password,
-                    nickname: authorNickname || '',
-                    vk: AuthorVk || '',
+                    Login: login,
+                    Email: email,
+                    Nickname: authorNickname || '',
+                    VK: AuthorVk || '',
+                    Password: password,
                 }),                
             })
             .then(response => {
                 if (!response.ok) {
-                    this.showNotification('Ошибка регистрации. Проверьте введенные данные (пароль: 8+ символов, заглавная, строчная, цифра).', 'error');
+                    this.showNotification('Ошибка регистрации. Проверьте введенные данные.', 'error');
                 } else {
                     this.showNotification('Письмо с подтверждением отправлено на почту!', 'success');
                     this.closeUserModal();
@@ -285,7 +254,6 @@ new Vue({
             fetch('/LogIn', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({
                     login: login,
                     password: password,
@@ -308,7 +276,6 @@ new Vue({
             fetch('/Recovery', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({ email: email }),
             })
             .then(response => {
