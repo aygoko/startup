@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><title>Товары — Коллекты от Софы</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Товары — Коллекты от Софы</title>
 <link rel="stylesheet" href="Sofa.css"><script src="https://cdn.jsdelivr.net/npm/vue@2"></script></head>
 <body>
 <div id="app"><div id="notifications" class="notifications"></div>
@@ -20,15 +20,15 @@
     <h2>Фильтры</h2>
     <div class="fgroup"><div class="ft">Категория</div>
       <div class="frow" v-for="c in filters.categories" :key="c">
-        <label><input type="checkbox" :value="c" v-model="f.cats"> {{ c }}</label><span class="cnt">7</span>
+        <label><input type="checkbox" :value="c" v-model="f.cats"> {{ c }}</label><span class="cnt">{{ countCat(c) }}</span>
       </div>
     </div>
     <div class="fgroup"><div class="ft">Цена</div>
       <div class="price-inputs">
-        <input type="number" v-model.number="f.pMin" placeholder="234">
-        <input type="number" v-model.number="f.pMax" placeholder="654">
+        <input type="number" v-model.number="f.pMin" :placeholder="priceMin">
+        <input type="number" v-model.number="f.pMax" :placeholder="priceMax">
       </div>
-      <input type="range" min="0" max="1000" v-model.number="f.pMax">
+      <input type="range" :min="priceMin" :max="priceMax" v-model.number="f.pMax">
     </div>
     <div class="fgroup"><div class="ft">Минимальный тираж <span title="подсказка">❓</span></div>
       <div class="chips"><button class="chip" v-for="m in filters.minRuns" :key="m"
@@ -36,7 +36,7 @@
     </div>
     <div class="fgroup"><div class="ft">Формат</div>
       <div class="frow" v-for="s in filters.formats" :key="s">
-        <label><input type="checkbox" :value="s" v-model="f.formats"> {{ s }}</label><span class="cnt">7</span>
+        <label><input type="checkbox" :value="s" v-model="f.formats"> {{ s }}</label><span class="cnt">{{ countFmt(s) }}</span>
       </div>
     </div>
     <button class="clear" @click="clear">Очистить</button>
@@ -56,7 +56,7 @@
         <a class="name" :href="'Product.html?article='+g.article">{{ g.name }}</a>
         <div class="price">{{ g.price }}₽</div>
         <div><span v-if="g.badge" class="badge">ещё {{ g.badge.left }} шт до {{ g.badge.to }}₽</span></div>
-        <div class="stepper" v-if="g.stepper"><button>−</button><span>{{ g.stepper }}</span><button>+</button></div>
+        <div class="stepper" v-if="g.stepper"><button @click="chQty(g,-1)">−</button><span>{{ qty[g.article] }}</span><button @click="chQty(g,1)">+</button></div>
         <button v-else class="cart-btn" @click="add(g.article)">В корзину</button>
       </div>
     </div>

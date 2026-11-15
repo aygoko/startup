@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><title>Товар — Коллекты от Софы</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Товар — Коллекты от Софы</title>
 <link rel="stylesheet" href="Sofa.css"><script src="https://cdn.jsdelivr.net/npm/vue@2"></script></head>
 <body>
 <div id="app"><div id="notifications" class="notifications"></div>
@@ -54,11 +54,11 @@
     <h2>Рекомендации</h2>
     <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
       <div class="card" v-for="r in recs" :key="r.article">
-        <div class="card-img"><button class="heart">♥</button>
+        <div class="card-img"><button class="heart" :class="{on:fav[r.article]}" @click="toggleFav(r.article)">♥</button>
           <a :href="'Product.html?article='+r.article"><img :src="r.photo"></a></div>
         <div class="cat">{{ r.cat }}</div><a class="name" :href="'Product.html?article='+r.article">{{ r.name }}</a>
         <div class="price">{{ r.price }}₽</div>
-        <button class="cart-btn">В корзину</button>
+        <button class="cart-btn" @click="addRec(r)">В корзину</button>
       </div>
     </div>
   </section>
@@ -67,7 +67,7 @@
     <h2>Отзывы</h2>
     <div class="rev" v-for="r in g.reviews" :key="r.name">
       <div class="who"><span class="av">{{ r.name[0] }}</span><b>{{ r.name }}</b></div>
-      <div class="author">Автор: <a :href="r.tg">{{ r.author }}</a> <a :href="r.vk">✉</a> <a :href="r.vk">VK</a></div>
+      <div class="author">Автор: <a :href="link(r.tg)" target="_blank" rel="noopener">{{ r.author }}</a> <a :href="link(r.tg)" target="_blank" rel="noopener">✉</a> <a :href="link(r.vk)" target="_blank" rel="noopener">VK</a></div>
       <div class="photos"><img v-for="p in r.photos" :key="p" :src="p"></div>
     </div>
   </section>
