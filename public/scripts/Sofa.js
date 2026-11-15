@@ -1,11 +1,11 @@
 /* ============================================================
-   Эндпоинты авторизации. Если в server.go они называются иначе —
-   поменяйте их ТОЛЬКО здесь.
+   Эндпоинты — взяты из main.go (Fiber). Менять только здесь.
+   Регистрация/вход/восстановление лежат БЕЗ префикса /api.
    ============================================================ */
 const API = {
-  signUp: '/api/SignUpUser',
-  logIn: '/api/LogIn',
-  recovery: '/api/Recovery',
+  signUp: '/SignUpUser',
+  logIn: '/LogIn',
+  recovery: '/Recovery',
   authenticate: '/api/authenticate',
   addToCart: '/api/addToCart',
 };
