@@ -36,6 +36,7 @@
                 <nav class="nav">
                     <a class="txt" v-if="!isAuth" href="#" @click.prevent="openLogInModal">Войти</a>
                     <a class="txt" v-else href="User.html">Профиль</a>
+                    <a class="txt" v-if="!isAuth" href="#" @click.prevent="openUserModal">Регистрация</a>
                     <a class="txt" href="Goods.html">Товары</a>
                     <a class="txt" href="Sofa.html">Главная</a>
                     <a class="rose" href="Sofa.html">🌹</a>
@@ -265,6 +266,7 @@
                     
                     <button type="submit">Войти</button>
                     <a href="#" @click.prevent="openRecoveryModal" class="switch-auth-link">Забыли пароль?</a>
+                    <a href="#" @click.prevent="openUserModal" class="switch-auth-link">Нет аккаунта? <b>Зарегистрироваться</b></a>
                 </form>
             </div>
         </div>

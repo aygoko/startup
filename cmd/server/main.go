@@ -99,10 +99,10 @@ func main() {
 	// === ПУБЛИЧНЫЕ МАРШРУТЫ (без авторизации) ===
 	app.Get("/sofa/getgoods", goodsHandler.GetBasicGoods) // Важно для главной страницы
 
-	app.Post("/SignUpUser", authHandler.SignUp)
-	app.Post("/LogIn", authHandler.Login)
+	app.Post("/api/SignUpUser", authHandler.SignUp)
+	app.Post("/api/LogIn", authHandler.Login)
+	app.Post("/api/Recovery", authHandler.Recovery)
 	app.Post("/api/logout", authHandler.Logout)
-	app.Post("/Recovery", authHandler.Recovery)
 	app.Post("/api/SubmitRecovery", authHandler.SubmitRecovery)
 	app.Post("/api/checkToken", authHandler.CheckToken)
 	app.Post("/api/confirmRecoveryToken", authHandler.ConfirmRecoveryToken)

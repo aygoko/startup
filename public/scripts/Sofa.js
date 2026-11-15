@@ -1,11 +1,7 @@
-/* ============================================================
-   Эндпоинты — взяты из main.go (Fiber). Менять только здесь.
-   Регистрация/вход/восстановление лежат БЕЗ префикса /api.
-   ============================================================ */
 const API = {
-  signUp: '/SignUpUser',
-  logIn: '/LogIn',
-  recovery: '/Recovery',
+  signUp: '/api/SignUpUser',   
+  logIn: '/api/LogIn',
+  recovery: '/api/Recovery',
   authenticate: '/api/authenticate',
   addToCart: '/api/addToCart',
 };
@@ -61,6 +57,23 @@ new Vue({
     } catch (e) { this.isCookieBannerVisible = true; }
     if (location.hash === '#login') this.openLogInModal();
 
+    // ссылка из письма: Sofa.html?sign_up_token=...  -> подтверждаем почту
+    const qs = new URLSearchParams(location.search);
+    const token = qs.get('sign_up_token') || qs.get('signup_token') || qs.get('token');
+    if (token) {
+      this.post('/api/checkToken', { token })
+        .then(res => {
+          if (res.ok && res.json && res.json.success) {
+            this.showNotification('Почта подтверждена! Теперь можно войти.', 'success');
+            this.openLogInModal();
+          } else {
+            this.showNotification('Ссылка недействительна или устарела.', 'error');
+          }
+          history.replaceState(null, '', location.pathname);
+        })
+        .catch(() => {});
+    }
+
     // уже вошёл? тогда вместо «Войти» показываем «Профиль»
     fetch(API.authenticate, { credentials: 'include' })
       .then(r => (r.ok ? r.json() : null))
@@ -92,7 +105,7 @@ new Vue({
 
     /* --- общий POST: возвращает {ok, status, text, json} --- */
     post(url, body) {
-      return fetch(url, {
+      const send = u => fetch(u, {
         method: 'POST', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -100,14 +113,26 @@ new Vue({
         let json = null; try { json = JSON.parse(text); } catch (e) {}
         return { ok: r.ok, status: r.status, text, json };
       }));
+      // 404 = такого маршрута нет -> пробуем тот же путь без «/api»
+      return send(url).then(res =>
+        (res.status === 404 && url.indexOf('/api/') === 0 ? send(url.slice(4)) : res));
     },
     errorText(res, fallback) {
-      const t = res.text || '';
-      if (/already exists/i.test(t)) return 'Пользователь с таким логином или почтой уже существует.';
-      if (/banned/i.test(t)) return 'Аккаунт заблокирован.';
-      if (res.status === 401 || /unauthor|invalid|incorrect|wrong/i.test(t)) return 'Неверный логин или пароль.';
-      if (res.status === 409) return 'Пользователь с такими данными уже существует.';
-      if (res.status === 400) return 'Проверьте введённые данные.';
+      // сервер отвечает JSON вида {"error": "..."}
+      const t = (res.json && res.json.error) || res.text || '';
+      const map = [
+        ['email not confirmed', 'Почта не подтверждена. Перейдите по ссылке из письма.'],
+        ['active token already exists', 'Письмо уже отправлено. Проверьте почту (и папку «Спам»), повторить можно позже.'],
+        ['nickname already exists', 'Такой ник автора уже занят.'],
+        ['user already exists', 'Пользователь с таким логином или почтой уже существует.'],
+        ['password is too weak', 'Пароль слишком слабый. Сделайте его длиннее, добавьте цифры и буквы разного регистра.'],
+        ['user is banned', 'Аккаунт заблокирован.'],
+        ['invalid credentials', 'Неверный логин или пароль.'],
+        ['user not found', 'Пользователь с такой почтой не найден.'],
+        ['invalid request body', 'Не удалось отправить форму. Обновите страницу и попробуйте снова.'],
+      ];
+      const hit = map.find(([k]) => t.toLowerCase().includes(k));
+      if (hit) return hit[1];
       if (res.status >= 500) return 'Ошибка сервера. Попробуйте позже.';
       return fallback;
     },
@@ -153,7 +178,7 @@ new Vue({
       this.post(API.signUp, body)
         .then(res => {
           if (!res.ok) return this.showNotification(this.errorText(res, 'Не удалось зарегистрироваться.'), 'error');
-          this.showNotification('Регистрация прошла успешно!', 'success');
+          this.showNotification('Готово! Мы отправили письмо — подтвердите почту, затем войдите.', 'success');
           this.openLogInModal();
         })
         .catch(() => this.showNotification('Нет связи с сервером.', 'error'));
@@ -172,7 +197,7 @@ new Vue({
       this.post(API.recovery, { email: val('RecoveryEmail').trim() })
         .then(res => {
           if (!res.ok) return this.showNotification(this.errorText(res, 'Не удалось отправить письмо.'), 'error');
-          this.showNotification('Если такая почта есть в системе, мы отправили ссылку.', 'success');
+          this.showNotification('Мы отправили ссылку для восстановления на вашу почту.', 'success');
           this.closeRecoveryModal();
         })
         .catch(() => this.showNotification('Нет связи с сервером.', 'error'));
