@@ -40,7 +40,7 @@ func main() {
 
 	// 3. Инициализация инфраструктуры
 	sessionManager := session.NewManager()
-	emailSender := email.NewSMTPSender(cfg.SMTPHost, cfg.SMTPPort, cfg.SMTPUser, cfg.SMTPPassword)
+	emailSender := email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom)
 
 	// 4. Инициализация репозиториев
 	userRepo := postgres.NewUserRepository(db)

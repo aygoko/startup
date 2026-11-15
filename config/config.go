@@ -15,12 +15,20 @@ type Config struct {
 	DBPassword    string
 	DBName        string
 	SessionSecret string
-	SMTPHost      string
-	SMTPPort      string
-	SMTPUser      string
-	SMTPPassword  string
-	FrontendURL   string
-	GeminiURL     string
+
+	// Старая SMTP-отправка (на вашем хостинге порты закрыты, оставлено только чтобы код компилировался,
+	// пока main.go не переключён на Resend)
+	SMTPHost     string
+	SMTPPort     string
+	SMTPUser     string
+	SMTPPassword string
+
+	// Отправка писем через Resend (HTTPS)
+	ResendAPIKey string
+	EmailFrom    string
+
+	FrontendURL string
+	GeminiURL   string
 }
 
 func Load() *Config {
@@ -34,15 +42,23 @@ func Load() *Config {
 		DBHost:        getEnv("DB_HOST", "localhost"),
 		DBPort:        getEnv("DB_PORT", "5432"),
 		DBUser:        getEnv("DB_USER", "postgres"),
-		DBPassword:    getEnv("DB_PASSWORD", "1488"),
+		DBPassword:    getEnv("DB_PASSWORD", "1488"), // TODO: смените пароль и задайте его в .env
 		DBName:        getEnv("DB_NAME", "sofa"),
-		SessionSecret: getEnv("SESSION_SECRET", "super-secret-key-change-in-prod-please"),
-		SMTPHost:      getEnv("SMTP_HOST", "smtp.yandex.ru"),
-		SMTPPort:      getEnv("SMTP_PORT", "587"),
-		SMTPUser:      getEnv("SMTP_USER", "s.polo2005@yandex.ru"),
-		SMTPPassword:  getEnv("SMTP_PASSWORD", "sltsjawwlrauzcfh"),
-		FrontendURL:   getEnv("FRONTEND_URL", "https://46k2wbxg-8080.euw.devtunnels.ms"),
-		GeminiURL:     getEnv("GEMINI_URL", "http://blue.fnode.me:25534/generate"),
+		SessionSecret: getEnv("SESSION_SECRET", "super-secret-key-change-in-prod-please"), // TODO: задайте свой в .env
+
+		SMTPHost:     getEnv("SMTP_HOST", ""),
+		SMTPPort:     getEnv("SMTP_PORT", "587"),
+		SMTPUser:     getEnv("SMTP_USER", ""),
+		SMTPPassword: getEnv("SMTP_PASSWORD", ""), // пароль из кода убран
+
+		ResendAPIKey: getEnv("RESEND_API_KEY", ""),
+		// onboarding@resend.dev работает без подтверждения домена, но шлёт письма
+		// только на адрес владельца аккаунта Resend. Для всех — noreply@merchotsofy.ru после подтверждения домена.
+		EmailFrom: getEnv("EMAIL_FROM", "onboarding@resend.dev"),
+
+		// Ссылки в письмах (подтверждение почты, восстановление пароля) строятся от этого адреса
+		FrontendURL: getEnv("FRONTEND_URL", "https://landing.merchotsofy.ru"),
+		GeminiURL:   getEnv("GEMINI_URL", "http://blue.fnode.me:25534/generate"),
 	}
 }
 
