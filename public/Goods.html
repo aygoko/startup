@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Товары — Коллекты от Софы</title>
+<link rel="stylesheet" href="Sofa.css"><script src="https://cdn.jsdelivr.net/npm/vue@2"></script></head>
+<body>
+<div id="app"><div id="notifications" class="notifications"></div>
+<header><div class="wrap header-content">
+  <a class="logo" href="Sofa.html"><b class="c1">К</b><b class="c2">О</b><b class="c3">Л</b><b class="c4">Л</b><b class="c5">Е</b><b class="c1">К</b><b class="c2">Т</b><b class="c3">Ы</b>&nbsp;<b class="c4">О</b><b class="c5">Т</b>&nbsp;<b class="c1">С</b><b class="c2">О</b><b class="c3">Ф</b><b class="c4">Ы</b></a>
+  <nav class="icon-nav">
+    <a href="Basket.html"><span class="ic">🛍</span>Корзина</a>
+    <a href="#"><span class="ic">❤️</span>Избранное</a>
+    <a href="User.html"><span class="ic">👤</span>Имя</a>
+    <a href="#"><span class="ic">🎁</span>Заказы</a>
+    <a href="Goods.html"><span class="ic">☰</span>Каталог</a>
+  </nav>
+</div></header>
+
+<main class="wrap catalog">
+  <aside class="filters">
+    <h2>Фильтры</h2>
+    <div class="fgroup"><div class="ft">Категория</div>
+      <div class="frow" v-for="c in filters.categories" :key="c">
+        <label><input type="checkbox" :value="c" v-model="f.cats"> {{ c }}</label><span class="cnt">7</span>
+      </div>
+    </div>
+    <div class="fgroup"><div class="ft">Цена</div>
+      <div class="price-inputs">
+        <input type="number" v-model.number="f.pMin" placeholder="234">
+        <input type="number" v-model.number="f.pMax" placeholder="654">
+      </div>
+      <input type="range" min="0" max="1000" v-model.number="f.pMax">
+    </div>
+    <div class="fgroup"><div class="ft">Минимальный тираж <span title="подсказка">❓</span></div>
+      <div class="chips"><button class="chip" v-for="m in filters.minRuns" :key="m"
+        :class="{on:f.minRun===m}" @click="f.minRun = f.minRun===m?null:m">{{ m }}</button></div>
+    </div>
+    <div class="fgroup"><div class="ft">Формат</div>
+      <div class="frow" v-for="s in filters.formats" :key="s">
+        <label><input type="checkbox" :value="s" v-model="f.formats"> {{ s }}</label><span class="cnt">7</span>
+      </div>
+    </div>
+    <button class="clear" @click="clear">Очистить</button>
+  </aside>
+
+  <section>
+    <input class="search" placeholder="🔍 Что вы ищете?" v-model="f.q">
+    <div class="sortbar" @click="cycleSort">⇅ Сортировать: {{ sortLabel }}</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+      <div class="card" v-for="g in shown" :key="g.article">
+        <div class="card-img">
+          <span v-if="g.star" class="star">⭐</span>
+          <button class="heart" :class="{on:fav[g.article]}" @click="toggleFav(g.article)">♥</button>
+          <a :href="'Product.html?article='+g.article"><img :src="g.photo" :alt="g.name"></a>
+        </div>
+        <div class="cat">{{ g.cat }}</div>
+        <a class="name" :href="'Product.html?article='+g.article">{{ g.name }}</a>
+        <div class="price">{{ g.price }}₽</div>
+        <div><span v-if="g.badge" class="badge">ещё {{ g.badge.left }} шт до {{ g.badge.to }}₽</span></div>
+        <div class="stepper" v-if="g.stepper"><button>−</button><span>{{ g.stepper }}</span><button>+</button></div>
+        <button v-else class="cart-btn" @click="add(g.article)">В корзину</button>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>ИП Чеклашова А. С. © 2025–2026</footer>
+</div>
+<script src="scripts/catalog.js"></script>
+<script src="scripts/Goods.js"></script>
+</body>
+</html>

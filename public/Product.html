@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Товар — Коллекты от Софы</title>
+<link rel="stylesheet" href="Sofa.css"><script src="https://cdn.jsdelivr.net/npm/vue@2"></script></head>
+<body>
+<div id="app"><div id="notifications" class="notifications"></div>
+<header><div class="wrap header-content">
+  <a class="logo" href="Sofa.html"><b class="c1">К</b><b class="c2">О</b><b class="c3">Л</b><b class="c4">Л</b><b class="c5">Е</b><b class="c1">К</b><b class="c2">Т</b><b class="c3">Ы</b>&nbsp;<b class="c4">О</b><b class="c5">Т</b>&nbsp;<b class="c1">С</b><b class="c2">О</b><b class="c3">Ф</b><b class="c4">Ы</b></a>
+  <nav class="nav"><a class="txt" href="Sofa.html#login">Войти</a><a class="txt" href="Goods.html">Товары</a><a class="txt" href="Sofa.html">Главная</a><a class="rose" href="Sofa.html">🌹</a></nav>
+</div></header>
+
+<main class="wrap">
+  <section class="product">
+    <div class="pimg"><button class="heart on">♥</button><img :src="g.photo" :alt="g.name"></div>
+    <div>
+      <h1>{{ g.name }}</h1>
+      <p class="meta">Категория: <a href="Goods.html" style="color:var(--ink);text-decoration:underline">{{ g.cat }}</a></p>
+      <p class="meta">Артикул: <b>{{ g.article }}</b></p>
+      <p class="meta">Доставка: ~{{ g.delivery }}₽ <span title="рассчитывается индивидуально">❓</span></p>
+
+      <template v-if="g.options">
+        <div class="opt-label">Основа:</div>
+        <div class="opts"><button class="opt" :class="{on:base===b}" v-for="b in g.options.base"
+          :key="b" @click="base=b">{{ b }}</button></div>
+
+        <div class="opt-label">Количество:</div>
+        <div class="opts"><button class="opt" :class="{on:tier.q===t.q}" v-for="t in g.options.tiers"
+          :key="t.q" @click="tier=t">{{ t.q }}<small>{{ t.p }}₽/шт</small></button></div>
+
+        <div class="opt-label">Бумажная подложка:</div>
+        <div class="opts">
+          <button class="opt" :class="{on:backing}" @click="backing=true">
+            {{ g.options.backing.q }}<small>{{ g.options.backing.p }}₽/шт</small></button>
+          <button class="opt" :class="{on:!backing}" @click="backing=false">Нет</button>
+        </div>
+      </template>
+
+      <div class="total">{{ total }}₽</div>
+      <div v-if="g.badge"><span class="badge">ещё {{ g.badge.left }} шт до {{ g.badge.to }}₽</span></div>
+      <button class="cart-btn" style="margin-top:14px" @click="add">В корзину</button>
+    </div>
+  </section>
+
+  <section class="specs" v-if="g.specs">
+    <h2>О товаре / Технические характ.</h2>
+    <p><b>Размер:</b> {{ g.specs.size }}</p>
+    <p><b>Материал:</b> {{ g.specs.material }}</p>
+    <p><b>Макет:</b> {{ g.specs.maket }}</p>
+    <p v-if="g.specs.template"><b>Шаблон:</b> <a href="#">ссылка</a></p>
+    <p class="note" v-for="n in g.specs.extra" :key="n">• {{ n }} ❓</p>
+  </section>
+
+  <section class="recs">
+    <h2>Рекомендации</h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+      <div class="card" v-for="r in recs" :key="r.article">
+        <div class="card-img"><button class="heart">♥</button>
+          <a :href="'Product.html?article='+r.article"><img :src="r.photo"></a></div>
+        <div class="cat">{{ r.cat }}</div><a class="name" :href="'Product.html?article='+r.article">{{ r.name }}</a>
+        <div class="price">{{ r.price }}₽</div>
+        <button class="cart-btn">В корзину</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="revs" v-if="g.reviews">
+    <h2>Отзывы</h2>
+    <div class="rev" v-for="r in g.reviews" :key="r.name">
+      <div class="who"><span class="av">{{ r.name[0] }}</span><b>{{ r.name }}</b></div>
+      <div class="author">Автор: <a :href="r.tg">{{ r.author }}</a> <a :href="r.vk">✉</a> <a :href="r.vk">VK</a></div>
+      <div class="photos"><img v-for="p in r.photos" :key="p" :src="p"></div>
+    </div>
+  </section>
+</main>
+<footer>ИП Чеклашова А. С. © 2025–2026</footer>
+</div>
+<script src="scripts/catalog.js"></script>
+<script src="scripts/Product.js"></script>
+</body>
+</html>
