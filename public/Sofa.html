@@ -34,27 +34,29 @@
             
             <div class="header-right">
                 <nav class="nav">
-                    <a class="txt" href="#" @click.prevent="openLogInModal">Войти</a>
+                    <a class="txt" v-if="!isAuth" href="#" @click.prevent="openLogInModal">Войти</a>
+                    <a class="txt" v-else href="User.html">Профиль</a>
                     <a class="txt" href="Goods.html">Товары</a>
                     <a class="txt" href="Sofa.html">Главная</a>
                     <a class="rose" href="Sofa.html">🌹</a>
                 </nav>
-                <button id="menuToggle" class="menu-button" aria-label="Открыть меню">☰</button>
+                <button id="menuToggle" class="menu-button" aria-label="Открыть меню" @click="sidebarOpen=!sidebarOpen">☰</button>
             </div>
         </div>
     </header>
     
     <!-- Боковое мобильное меню (из оригинала) -->
-    <aside id="sidebar" class="sidebar">
+    <div class="sidebar-backdrop" v-if="sidebarOpen" @click="closeSidebar"></div>
+    <aside id="sidebar" class="sidebar" :class="{active:sidebarOpen}">
         <nav>
             <a style="text-decoration: underline; color:black"><b>Главная</b></a>
             <a href="Goods.html" @click="closeSidebar">Товары</a>
-            <a href="#" @click.prevent="openLogInModal" @click="closeSidebar">Войти</a>
-            <a href="#" @click.prevent="openUserModal" @click="closeSidebar">Зарегистрироваться</a>
+            <a href="#" @click.prevent="openLogInModal(); closeSidebar()">Войти</a>
+            <a href="#" @click.prevent="openUserModal(); closeSidebar()">Зарегистрироваться</a>
             <a href="#goods" @click="closeSidebar">Текущие сборы</a>
             <a href="#benefits" @click="closeSidebar">Преимущества</a>
-            <a href="#" @click.prevent="openDocModal('terms')" @click="closeSidebar">Оферта и соглашение</a>
-            <a href="#" @click.prevent="openDocModal('privacy')" @click="closeSidebar">Конфиденциальность</a>
+            <a href="#" @click.prevent="openDocModal('terms'); closeSidebar()">Оферта и соглашение</a>
+            <a href="#" @click.prevent="openDocModal('privacy'); closeSidebar()">Конфиденциальность</a>
         </nav>
     </aside>
     
@@ -105,7 +107,7 @@
                 <div>
                     <h2>КАЛЕНДАРЬ ДЕДЛАЙНОВ</h2>
                     <p class="sub">Следите за сроками сдачи макетов и оплаты, чтобы попасть в текущий тираж</p>
-                    <div class="month">ДЕКАБРЬ</div>
+                    <div class="month" id="calMonth">ДЕКАБРЬ</div>
                 </div>
                 <a class="link" href="#">Подробнее →</a>
             </div>
@@ -383,9 +385,10 @@
         </div>
     </footer>
     
-    <!-- Скрипты: сначала данные, потом логика -->
-    <script src="scripts/catalog.js"></script>
-    <script src="scripts/Sofa.js"></script>
 </div>
+
+<!-- Скрипты: сначала данные, потом логика (снаружи #app!) -->
+<script src="scripts/catalog.js"></script>
+<script src="scripts/Sofa.js"></script>
 </body>
 </html>
